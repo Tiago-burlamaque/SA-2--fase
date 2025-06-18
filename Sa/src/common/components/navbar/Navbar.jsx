@@ -29,11 +29,18 @@ const Navbar = () => {
 
     return (
         <nav className="navbar">
+            <div className="container-inicio-navbar">
+                <img src="public/images/Frame_4-removebg-preview.png" alt="" width={"100px"} />
+            </div>
             <ul className="navbar-list">
+                
                 {online && (
+                <div className="container-links">
                     <li className="navbar-item">
                         <Link to="/paginainicial" className="navbar-link">HomePage</Link>
                     </li>
+                </div>
+                   
                 )}
 
                 <li className="navbar-item">
@@ -42,21 +49,27 @@ const Navbar = () => {
 
                 {!online && (
                     <>
+                    <div className="container-links">
                         <li className="navbar-item">
                             <Link to="/cadastro" className="navbar-link">Cadastrar</Link>
                         </li>
+                    </div>
+                    <div className="container-links">
                         <li className="navbar-item">
                             <Link to="/login" className="navbar-login">Login</Link>
                         </li>
+                        </div>
                     </>
                 )}
 
 
                 {online && (
+                <div className="container-links">
                     <li className="navbar-item">
 
                         <button onClick={botaoLogout} className="btn-logout">Logout</button>
                     </li>
+                </div>
                 )}
             </ul>
         </nav>

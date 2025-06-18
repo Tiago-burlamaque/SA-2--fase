@@ -1,8 +1,11 @@
 .container-cadastro-cliente{
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    flex-direction: column;
+}
+.container-cadastro-cliente h1{
+    color: var(--cor-texto-padrao);
 }
 input{
     display: flex;
@@ -33,7 +36,7 @@ input{
     height: 50vh;
     border-radius: 10px;
     border-color: #0000;
-    box-shadow:  20px 20px 0 var(--cor-primaria-escura);
+    box-shadow:  20px 20px 20px var(--cor-primaria-escura);
     background-color: rgb(229, 216, 252);
     display: flex;
     flex-direction: column;

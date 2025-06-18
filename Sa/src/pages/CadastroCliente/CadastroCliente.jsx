@@ -35,7 +35,7 @@ function CadastroCliente() {
     <div className="container-cadastro-cliente">
       <div className="container-cadastro-box">
         <div className="container-topo">
-        <h2>Cadastro</h2><img src="public/images/Icon.svg" alt="" />
+        <h1>Cadastro</h1><img src="public/images/Icon.svg" alt="" />
         </div>
         <div className="input-group">
           <label htmlFor="nome">Nome:</label>

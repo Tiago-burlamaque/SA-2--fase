@@ -13,6 +13,10 @@ input{
     justify-content: center;
   
 }
+a{
+    text-decoration: none;
+    color: var(--cor-primaria-escura);
+}
 .input-group{
     display: flex;
     flex-direction: row;

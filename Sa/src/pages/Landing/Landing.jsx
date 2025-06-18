@@ -17,7 +17,7 @@ function Landing(){
           <div className="descricao-landing">
 
             <img src="public/images/Frame_4-removebg-preview.png" alt="" width={"1000px"}/>
-            <p>Um aplicativo de criação de rotinas para crianças autistas pode ter um impacto profundamente positivo na sociedade, promovendo inclusão, autonomia e bem-estar tanto para as crianças quanto para suas famílias. Ao oferecer recursos visuais, lembretes personalizados e atividades estruturadas, o app facilita a compreensão do dia a dia por parte das crianças com transtorno do espectro autista (TEA), que frequentemente se beneficiam de previsibilidade e organização. Além disso, ao reduzir crises de ansiedade e melhorar a comunicação entre pais, cuidadores e educadores, o aplicativo contribui para um ambiente mais acolhedor e colaborativo. A longo prazo, esse tipo de tecnologia pode auxiliar no desenvolvimento da independência dessas crianças, diminuir a sobrecarga familiar e fomentar uma sociedade mais empática e preparada para lidar com a diversidade.
+            <p>Um aplicativo de rotinas para crianças autistas pode melhorar significativamente a vida dessas crianças e de suas famílias. Com recursos visuais e lembretes personalizados, ele ajuda na organização do dia a dia, reduz crises de ansiedade e facilita a comunicação entre pais, cuidadores e educadores. Essa tecnologia promove inclusão, autonomia e contribui para uma sociedade mais empática e preparada para a diversidade.
             </p>
             </div>
           <div className="botao-landing" >

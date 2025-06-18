@@ -29,9 +29,7 @@ const Navbar = () => {
 
     return (
         <nav className="navbar">
-            <div className="container-inicio-navbar">
-                <img src="public/images/Frame_4-removebg-preview.png" alt="" width={"100px"} />
-            </div>
+
             <ul className="navbar-list">
                 
                 {online && (

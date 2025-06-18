@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import ServicoAutentificacao from "../../common/service/servicoAutentificacao";
 import "./LoginCliente.css";
@@ -56,6 +56,7 @@ function LoginCliente() {
           <button onClick={entrar} className="btn-log">
             Entrar
           </button>
+          <p>Não tem uma conta? <Link to={"/cadastro"}>Cadastre-se</Link></p>
         </div>
       </div>
     </div>

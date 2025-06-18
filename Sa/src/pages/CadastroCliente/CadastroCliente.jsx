@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import ServicoUsuarios from "../../common/service/servicoUsuarios";
 import "./CadastroCliente.css";
@@ -68,6 +68,7 @@ function CadastroCliente() {
           />
         </div>
         <button className="btn-cad" onClick={cadastrar}>Cadastrar</button>
+        <p>Já tem uma conta? <Link to={"/login"} className="login-link">Faça seu login aqui.</Link></p>
       </div>
     </div>
   );

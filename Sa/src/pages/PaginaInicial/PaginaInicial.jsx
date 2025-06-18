@@ -17,7 +17,7 @@ const PaginaInicial = () => {
             <div className="grid-item">Item 9</div>
             <div className="grid-item">Item 10</div>
             <div className="grid-item">Item 11</div>
-            <div className="grid-item">Item 12</div>
+            <div className="grid-item">Item 12</div> 
             </div>
         
     );

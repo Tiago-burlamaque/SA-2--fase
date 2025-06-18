@@ -1,0 +1,8 @@
+.rodape_root {
+    height: 46px;;
+    background-color: var(--cor-primaria-escura);
+    color: var(--cor-texto-claro);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

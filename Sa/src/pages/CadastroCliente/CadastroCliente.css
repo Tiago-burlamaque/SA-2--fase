@@ -1,0 +1,84 @@
+.container-cadastro-cliente{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+input{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  
+}
+.input-group{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+.container-topo{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+.container-topo img{
+    width: 40px;
+}
+
+.container-cadastro-box{
+    /* width: 400px; */
+    width: 50vw;
+    height: 50vh;
+    border-radius: 10px;
+    border-color: #0000;
+    box-shadow:  20px 20px 0 var(--cor-primaria-escura);
+    background-color: rgb(229, 216, 252);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+   .container-cadastro-box input{
+        width: 15vw;
+        padding: 15px;
+        font-size: 20px;
+        border: 1px solid #fefefe; 
+        border-radius: 10px;
+        margin: 10px;
+    }
+
+
+.btn-cad{
+    width: 30vw;
+    padding: 14px;
+    font-size: 20px;
+    margin: 10px;
+    margin-right: 10px;
+    border-radius: 5px;
+    border: 1px solid var(--cor-sucesso);
+    background-color: var(--cor-sucesso);
+
+    /* background-color: var(--cor-primaria-escura);
+    color: white; */
+}
+    .btn-cad:hover{
+    box-shadow:0 0 20px var(--cor-sucesso);
+    transition-duration: 1s;
+    cursor: pointer;
+    }
+
+#nome{
+    border: none;
+    outline: none;
+    border-bottom: 5px solid var(--cor-primaria-escura);
+    background-color: var(--cor);
+}  
+
+
+/* .btn-can:hover{
+    box-shadow: 0 0 20px var(--cor-erro);
+    transition-duration: 1s;
+    cursor: pointer;
+} */

@@ -19,6 +19,9 @@ const PaginaInicial = () => {
             <div className="grid-item">Item 11</div>
             <div className="grid-item">Item 12</div>  */}
 
+            <div>  <button >+Nova Rotina</button>  </div>
+            <div>  <button>Ger. Rotinas</button>  </div>
+            <div>  <button>Acompanhamento</button>  </div>
             
             </div>
         

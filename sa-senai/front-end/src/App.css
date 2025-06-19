@@ -1,0 +1,11 @@
+body{
+  background-color: var(--cor-primaria);
+
+  /* background: hsla(277, 75%, 84%, 1);    
+  background: linear-gradient(360deg, hsla(277, 75%, 84%, 1) 0%, hsla(293, 54%, 62%, 1) 59%, hsla(297, 50%, 51%, 1) 100%);
+  background: -moz-linear-gradient(360deg, hsla(277, 75%, 84%, 1) 0%, hsla(293, 54%, 62%, 1) 59%, hsla(297, 50%, 51%, 1) 100%);
+  background: -webkit-linear-gradient(360deg, hsla(277, 75%, 84%, 1) 0%, hsla(293, 54%, 62%, 1) 59%, hsla(297, 50%, 51%, 1) 100%);
+  filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#deb8f5", endColorstr="#C66AD2", GradientType=1 ); */
+
+
+}

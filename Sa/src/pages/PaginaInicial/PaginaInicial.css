@@ -1,0 +1,43 @@
+.grid-container {
+    display: flex;
+    grid-template-columns: repeat(4, 1fr); /* 3 colunas de tamanho igual */
+    gap: 15px; /* Espaçamento entre os itens */
+    padding: 25px;
+  }
+
+  .grid-item {
+    background-color: #007BFF;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    border-radius: 5px;
+    animation:
+    12s linear 0s infinite psychedelic,
+    2s infinite pulse;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);
+    }
+
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 3px rgba(0, 0, 0, 0);
+    }
+
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+    }
+}
+@keyframes psychedelic {
+    from {
+      filter: hue-rotate(0deg);
+    }
+    to {
+      filter: hue-rotate(360deg);
+    }
+  }
+  

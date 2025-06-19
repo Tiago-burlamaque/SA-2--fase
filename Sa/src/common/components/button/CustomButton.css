@@ -1,0 +1,26 @@
+.custom-button_root {
+    padding: 16px;
+    border: none;
+  
+    font-size: 14px;
+    opacity: 0.8;
+    cursor: pointer;
+    color: var(--cor-texto-claro);
+    font-weight: 400;
+  }
+  
+  .custom-button_root:hover {
+    opacity: 1;
+  }
+  
+  .custom-button_primario {
+    background-color: var(--cor-primaria);
+  }
+  
+  .custom-button_secundario {
+    background-color: var(--cor-secundaria);
+  }
+  
+  .custom-button_padrao {
+    background-color: var(--cor-cinza);
+  }

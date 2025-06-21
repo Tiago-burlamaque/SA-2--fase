@@ -1,27 +1,50 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";import "./CadastroCliente.css";
+// src/pages/CadastroCliente/CadastroCliente.jsx
 
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useClientes } from "../../common/service/useClientes";
+import "./CadastroCliente.css";
 
-function CadastroCliente() {
+export default function CadastroCliente() {
   const navigate = useNavigate();
-  const [nome, setNome] = useState("");
-  const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
 
-  const cadastrar = () => {
-    if (!nome || !email || !senha) {
-      toast.error("Preencha todos os campos!");
+  // Consome do hook apenas o que o cadastro precisa
+  const {
+    inputNome,
+    inputEmail,
+    inputSenha,
+    inputEndereco,
+    inputTelefone,
+    setInputNome,
+    setInputEmail,
+    setInputSenha,
+    setInputEndereco,
+    setInputTelefone,
+    cadastrarCliente,
+    limparForm,
+  } = useClientes();
+
+  // Handler do form: chama a função do hook, trata toast e redireciona
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Checa validação mínima
+    if (!inputNome || !inputEmail || !inputSenha) {
+      toast.error("Nome, e-mail e senha são obrigatórios!");
       return;
-    }   
+    }
 
-    if (sucesso) {
-      toast.success("Cadastro realizado com sucesso! Faça login.", {
+    try {
+      await cadastrarCliente();  
+      
+      toast.success("Cadastro realizado com sucesso!", {
         onClose: () => navigate("/login"),
         autoClose: 1500,
       });
-    } else {
-      toast.error("Um usuário com este e-mail já foi cadastrado!");
+    } catch (error) {
+      // O hook já loga o erro no console, mas aqui mostramos no toast
+      toast.error(error?.response?.data?.error || "Erro ao cadastrar cliente");
     }
   };
 
@@ -29,43 +52,82 @@ function CadastroCliente() {
     <div className="container-cadastro-cliente">
       <div className="container-cadastro-box">
         <div className="container-topo">
-        <h1>Cadastro</h1><img src="public/images/Icon.svg" alt="" />
+          <h1>Cadastro</h1>
+          <img src="public/images/Icon.svg" alt="Logo" />
         </div>
-        <div className="input-group">
-          <label htmlFor="nome">Nome:</label>
-          <input
-            type="text"
-            id="nome"
-            value={nome}
-            onChange={(e) => setNome(e.target.value)}
-            placeholder="Nome"
-          />
-        </div>
-        <div className="input-group">
-          <label htmlFor="email">E-mail:</label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-             placeholder="E-mail"
-          />
-        </div>
-        <div className="input-group">
-          <label htmlFor="senha">Senha:</label>
-          <input
-            type="password"
-            id="senha"
-            value={senha}
-            onChange={(e) => setSenha(e.target.value)}
-             placeholder="Senha"
-          />
-        </div>
-        <button className="btn-cad" onClick={cadastrar}>Cadastrar</button>
-        <p>Já tem uma conta? <Link to={"/login"} className="login-link">Faça seu login aqui.</Link></p>
+
+        <form onSubmit={handleSubmit}>
+          <div className="input-group">
+            <label htmlFor="nome">Nome:</label>
+            <input
+              id="nome"
+              type="text"
+              placeholder="Nome"
+              value={inputNome}
+              onChange={(e) => setInputNome(e.target.value)}
+            />
+          </div>
+
+          <div className="input-group">
+            <label htmlFor="email">E-mail:</label>
+            <input
+              id="email"
+              type="email"
+              placeholder="E-mail"
+              value={inputEmail}
+              onChange={(e) => setInputEmail(e.target.value)}
+            />
+          </div>
+
+          <div className="input-group">
+            <label htmlFor="senha">Senha:</label>
+            <input
+              id="senha"
+              type="password"
+              placeholder="Senha"
+              value={inputSenha}
+              onChange={(e) => setInputSenha(e.target.value)}
+            />
+          </div>
+
+          { /* Estes campos são opcionais no UI de cadastro, mas o hook envia para o servidor.
+               Se não quiser mostrá-los agora, eles ficarão com string vazia. */ }
+          <div className="input-group">
+            <label htmlFor="endereco">Endereço:</label>
+            <input
+              id="endereco"
+              type="text"
+              placeholder="Endereço (opcional)"
+              value={inputEndereco}
+              onChange={(e) => setInputEndereco(e.target.value)}
+            />
+          </div>
+
+          <div className="input-group">
+            <label htmlFor="telefone">Telefone:</label>
+            <input
+              id="telefone"
+              type="text"
+              placeholder="Telefone (opcional)"
+              value={inputTelefone}
+              onChange={(e) => setInputTelefone(e.target.value)}
+            />
+          </div>
+
+          <div className="botoes-cadastro">
+            <button className="btn-cad" type="submit">
+              Cadastrar
+            </button>
+            <button
+              className="btn-limpar"
+              type="button"
+              onClick={limparForm}
+            >
+              Limpar
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
 }
-
-export default CadastroCliente;

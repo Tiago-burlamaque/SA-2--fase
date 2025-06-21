@@ -94,7 +94,7 @@
         padding: 15px;
     }
     .btn-logout:hover{
-        background-color: var(--cor);
+        background-color: var(--cor-primaria-clara);
         border: none;
         outline: none;
         color: var(--cor-primaria-escura);
@@ -102,3 +102,17 @@
         transition: color 1.0s ease;
         cursor: pointer;
     }
+    .navbar-logout {
+  background: none;
+  border: none;
+  color: aliceblue;
+  font-size: 16px;
+  cursor: pointer;
+  text-decoration: none;
+  padding: 0;
+  transition: color 0.3s ease;
+}
+
+.navbar-logout:hover {
+  color: var(--cor-primaria-clara);
+}

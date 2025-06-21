@@ -6,7 +6,7 @@ const app = express();
 const pool = mysql.createPool({
     host: 'localhost',
     user: 'root',      // Altere para o nome do seu user no MySQL
-    password: 'senai',    // Altere para a senha correta
+    password: 'Noslig747!',    // Altere para a senha correta
     database: 'crud_cliente_demo',
     waitForConnections: true,
     connectionLimit: 10,
@@ -29,7 +29,7 @@ app.get('/clientes', async (req, res) => {
 app.get('/clientes/:id', async (req, res) => {
     const { id } = req.params;
     try {
-        const [rows] = await pool.query('SELECT * FROM clientes WHERE id = ?', [id]);
+        const [rows] = await pool.query('SELECT * FROM clientes WHERE id_clientes = ?', [id]);
         if (rows.length === 0) {
             return res.status(404).json({ error: 'Cliente não encontrado' });
         }
@@ -85,13 +85,13 @@ app.put('/clientes/:id', async (req, res) => {
     const { nome, endereco, email, telefone, senha } = req.body;
     try {
         const [result] = await pool.query(
-            'UPDATE clientes SET nome = ?, endereco = ?, email = ?, telefone = ?, senha = ? WHERE id = ?',
-            [nome, endereco, email, telefone, senha, id]
-        );
+    'UPDATE clientes SET nome = ?, endereco = ?, email = ?, telefone = ?, senha = ? WHERE id_clientes = ?',
+    [nome, endereco, email, telefone, senha, id]
+    );
         if (result.affectedRows === 0) {
             return res.status(404).json({ error: 'Cliente não encontrado' });
         }
-        const [clienteAtualizado] = await pool.query('SELECT * FROM clientes WHERE id = ?', [id]);
+        const [clienteAtualizado] = await pool.query('SELECT * FROM clientes WHERE id_clientes = ?', [id]);
         res.json(clienteAtualizado[0]);
     } catch (err) {
         console.error(err.message);
@@ -102,7 +102,7 @@ app.put('/clientes/:id', async (req, res) => {
 app.delete('/clientes/:id', async (req, res) => {
     const { id } = req.params;
     try {
-        const [result] = await pool.query('DELETE FROM clientes WHERE id = ?', [id]);
+        const [result] = await pool.query('DELETE FROM clientes WHERE id_clientes = ?', [id]);
         if (result.affectedRows === 0) {
             return res.status(404).json({ error: 'Cliente não encontrado' });
         }
@@ -113,8 +113,19 @@ app.delete('/clientes/:id', async (req, res) => {
     }
 });
 
+app.post('/login', async (req, res) => {
+  const { email, senha } = req.body;
+  const [rows] = await pool.query(
+     'SELECT * FROM clientes WHERE email = ? AND senha = ?',
+      [email, senha] ); 
+      if (rows.length === 0) return res.status(401).json({ sucesso: false }); 
+      res.json({ sucesso: true, cliente: rows[0] }); 
+    });
 
 
-app.listen(3000, () => {
-    console.log('Servidor rodando na porta 3000');
+
+const PORT = 3001;
+app.listen(PORT, () => {
+  console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
+

@@ -1,61 +1,76 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import "./LoginCliente.css";
+// src/pages/LoginCliente/LoginCliente.jsx
+import React, { useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { AuthContext } from '../../contexts/AuthContext';
+import { useClientes } from '../../common/service/useClientes';
+import './LoginCliente.css';
 
-function LoginCliente() {
+export default function LoginCliente() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
+  const { login } = useContext(AuthContext);
+  const {
+    inputEmail,
+    inputSenha,
+    setInputEmail,
+    setInputSenha,
+    loginCliente
+  } = useClientes();
 
-  const entrar = () => {
-    if (!email || !senha) {
-      toast.error("Preencha todos os campos!");
+  const entrar = async (e) => {
+    e.preventDefault();
+    if (!inputEmail || !inputSenha) {
+      toast.error('Preencha e-mail e senha!');
       return;
     }
-    if (usuarioLogado) {
-      toast.success("Login realizado com sucesso!");
-      navigate("/paginainicial");
-    } else {
-      toast.error("Usuário ou senha inválidos!");
+
+    try {
+      const { sucesso, cliente } = await loginCliente();
+      if (sucesso) {
+      login(cliente);
+      localStorage.setItem("clienteId", cliente.id_clientes); // ⬅️ esta linha salva o ID
+      toast.success('Bem-vindo(a)!', { autoClose: 1200 });
+      navigate('/home');
+      }   
+      else {
+        toast.error('Credenciais inválidas');
+      }
+    } catch {
+      toast.error('Erro ao conectar-se ao servidor');
     }
   };
 
-  return (
-    <div className="container-login-cliente">
-      <div className="container-login-box">
-                <h1>Login</h1>
+return (
+  <div className="container-login-cliente">
+    <div className="container-login-box">
+      <h1>Login</h1>
+      <form onSubmit={entrar}>
         <div className="cnt-box-login">
-          <label htmlFor="email">Digite seu e-mail:</label>
+          <label htmlFor="email">E-mail:</label>
           <input
-            type="text"
             id="email"
-            className="inputs-login"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="E-mail"
+            type="email"
+            value={inputEmail}
+            onChange={(e) => setInputEmail(e.target.value)}
+            placeholder="Digite seu e-mail"
           />
         </div>
-        <div className="cnt-box-login">
-          <label htmlFor="senha">Digite sua senha:</label>
-          <input
-            type="password"
-            id="senha"
-            className="inputs-login"
-            value={senha}
-            onChange={(e) => setSenha(e.target.value)}
-            placeholder="Senha"
-          />
-        </div>
-        <div className="buttons">
-          <button onClick={entrar} className="btn-log">
-            Entrar
-          </button>
-          <p>Não tem uma conta? <Link to={"/cadastro"}>Cadastre-se</Link></p>
-        </div>
-      </div>
-    </div>
-  );
-}
 
-export default LoginCliente;
+        <div className="cnt-box-login">
+          <label htmlFor="senha">Senha:</label>
+          <input
+            id="senha"
+            type="password"
+            value={inputSenha}
+            onChange={(e) => setInputSenha(e.target.value)}
+            placeholder="Digite sua senha"
+          />
+        </div>
+
+        <button type="submit">Entrar</button>
+      </form>
+    </div>
+  </div>
+);
+
+}

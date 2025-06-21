@@ -1,9 +1,6 @@
-import React, { createContext, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-export const ClientesContext = createContext();
-
-export const ClientesProvider = ({ children }) => {
   
   // Estados que gerenciam dados e formulários
   const [clientes, setClientes] = useState([]);
@@ -105,30 +102,3 @@ export const ClientesProvider = ({ children }) => {
     setInputEndereco(cliente.endereco || '');
     setInputTelefone(cliente.telefone || '');
   };
-
-  return (
-    <ClientesContext.Provider
-      value={{
-        clientes,
-        clienteSelecionado,
-        inputNome,
-        inputEmail,
-        inputEndereco,
-        inputTelefone,
-        setInputNome,
-        setInputEmail,
-        setInputEndereco,
-        setInputTelefone,
-        fetchClientes,
-        cadastrarCliente,
-        salvarCliente,
-        buscarClientePorId,
-        deletarCliente,
-        limparForm,
-        exibirCliente,
-      }}
-    >
-      {children}
-    </ClientesContext.Provider>
-  );
-};

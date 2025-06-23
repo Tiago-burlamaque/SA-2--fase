@@ -11,7 +11,6 @@ export default function PaginaInicial() {
   const { user, logout } = useContext(AuthContext);
   const clienteId = user?.id_clientes;
 
-
   const {
     inputNome,
     inputEmail,
@@ -29,17 +28,30 @@ export default function PaginaInicial() {
     limparForm,
   } = useClientes();
 
-  // Se abrir o modal, busca os dados do cliente logado
   useEffect(() => {
     if (modalOpen && clienteId) {
-      if (!user?.id_clientes) return;
-  buscarClientePorId(user.id_clientes).catch((err) => {
-    console.warn("Cliente não encontrado:", err);
-    logout(); // limpa contexto e localStorage
-    navigate("/login"); // redireciona pro login
-  });
+      buscarClientePorId(clienteId)
+        .then((cliente) => {
+          if (!cliente) {
+            console.warn("Cliente não encontrado.");
+            return;
+          }
+          console.log("Cliente encontrado:", cliente);
+  
+          setInputNome(cliente.nome || "");
+          setInputEmail(cliente.email || "");
+          setInputSenha(cliente.senha || "");
+          setInputEndereco(cliente.endereco || "");
+          setInputTelefone(cliente.telefone || "");
+        })
+        .catch((err) => {
+          console.warn("Erro ao buscar cliente:", err);
+          logout();
+          navigate("/login");
+        });
     }
-  }, [modalOpen, clienteId, buscarClientePorId, navigate]);
+  }, [modalOpen, clienteId, buscarClientePorId, navigate]);  
+
 
   const handleSave = async () => {
     try {
@@ -83,33 +95,33 @@ export default function PaginaInicial() {
 
             <label>Nome</label>
             <input
-              value={inputNome}
+              value={inputNome || ""}
               onChange={(e) => setInputNome(e.target.value)}
             />
 
             <label>E-mail</label>
             <input
               type="email"
-              value={inputEmail}
+              value={inputEmail || ""}
               onChange={(e) => setInputEmail(e.target.value)}
             />
 
             <label>Senha</label>
             <input
               type="password"
-              value={inputSenha}
+              value={inputSenha || ""}
               onChange={(e) => setInputSenha(e.target.value)}
             />
 
             <label>Endereço</label>
             <input
-              value={inputEndereco}
+              value={inputEndereco || ""}
               onChange={(e) => setInputEndereco(e.target.value)}
             />
 
             <label>Telefone</label>
             <input
-              value={inputTelefone}
+              value={inputTelefone || ""}
               onChange={(e) => setInputTelefone(e.target.value)}
             />
 

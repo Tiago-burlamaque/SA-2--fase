@@ -1,108 +1,195 @@
-// src/commom/service/useClientes.js
-import { useState, useEffect } from 'react';
+// src/common/service/useClientes.js
+import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 
+// cria uma instância axios com a baseURL
+const api = axios.create({ baseURL: 'http://localhost:3001' });
+
 export function useClientes() {
-  // ——— Estados de cliente/crud ———
-  const [clientes, setClientes] = useState([]);
+  // —— estados de dados ——
+  const [clientes, setClientes]               = useState([]);
   const [clienteSelecionado, setClienteSelecionado] = useState(null);
-  const [inputNome, setInputNome] = useState('');
-  const [inputEmail, setInputEmail] = useState('');
-  const [inputSenha, setInputSenha] = useState('');
-  const [inputEndereco, setInputEndereco] = useState('');
-  const [inputTelefone, setInputTelefone] = useState('');
+  // —— estados de formulário ——
+  const [inputNome, setInputNome]             = useState('');
+  const [inputEmail, setInputEmail]           = useState('');
+  const [inputSenha, setInputSenha]           = useState('');
+  const [inputEndereco, setInputEndereco]     = useState('');
+  const [inputTelefone, setInputTelefone]     = useState('');
+  // —— estados de controle ——
+  const [loading, setLoading] = useState(false);
+  const [error, setError]     = useState(null);
 
-  useEffect(() => { fetchClientes() }, []);
-
-  const fetchClientes = async () => {
-    try {
-      const { data } = await axios.get('http://localhost:3001/clientes');
-      setClientes(data);
-    } catch (err) {
-      console.error('Erro ao buscar clientes:', err);
-    }
-  };
-
-  const cadastrarCliente = async () => {
-    await axios.post('http://localhost:3001/clientes', {
-      nome: inputNome,
-      email: inputEmail,
-      senha: inputSenha,
-      endereco: inputEndereco,
-      telefone: inputTelefone,
-    });
-    fetchClientes();
-    limparForm();
-  };
-
-  const salvarCliente = async () => {
-    if (!clienteSelecionado) return;
-    await axios.put(
-      `http://localhost:3001/clientes/${clienteSelecionado.id_clientes}`, 
-      { nome: inputNome, email: inputEmail, senha: inputSenha,
-        endereco: inputEndereco, telefone: inputTelefone }
-    );
-    fetchClientes();
-    setClienteSelecionado(null);
-    limparForm();
-  };
-
-  const buscarClientePorId = async (id) => {
-    const { data } = await axios.get(`http://localhost:3001/clientes/${id}`);
-    setClienteSelecionado(data);
-    exibirCliente(data);
-  };
-
- const deletarCliente = async (id) => {
-    try {
-      const response = await axios.delete(`http://localhost:3001/clientes/${id}`);
-      if (response.status === 200) {
-        fetchClientes();
-      }
-    } catch (error) {
-      console.error('Erro ao deletar cliente:', error);
-    }
-  };
-
-  // ——— Novo: login ———
-  const loginCliente = async () => {
-    if (!inputEmail || !inputSenha) {
-      throw new Error('Preencha e-mail e senha');
-    }
-    // precisa existir rota POST /login no seu server.js
-    const { data } = await axios.post('http://localhost:3001/login', {
-      email: inputEmail,
-      senha: inputSenha,
-    });
-    return data; // { sucesso: true, cliente: {...} } ou { sucesso: false }
-  };
-
-  const limparForm = () => {
+  // limpa todos os campos do formulário
+  const limparForm = useCallback(() => {
     setInputNome('');
     setInputEmail('');
     setInputSenha('');
     setInputEndereco('');
     setInputTelefone('');
-  };
+  }, []);
 
-  const exibirCliente = (c) => {
+  // preenche o formulário a partir de um objeto cliente
+  const exibirCliente = useCallback((c) => {
+    if (!c) return;
     setInputNome(c.nome || '');
     setInputEmail(c.email || '');
     setInputSenha(c.senha || '');
     setInputEndereco(c.endereco || '');
     setInputTelefone(c.telefone || '');
-  };
+  }, []);
+
+  // —— BUSCAR TODOS OS CLIENTES ——  
+  const fetchClientes = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { data } = await api.get('/clientes');
+      setClientes(data);
+    } catch (err) {
+      console.error('Erro ao buscar clientes:', err);
+      setError('Não foi possível carregar a lista de clientes.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // —— BUSCAR CLIENTE POR ID ——  
+  const buscarClientePorId = useCallback(async (id) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const resp = await api.get(`/clientes/${id}`);
+      if (resp.status === 200 && resp.data) {
+        setClienteSelecionado(resp.data);
+        exibirCliente(resp.data);
+        return resp.data;
+      } else {
+        setError('Cliente não encontrado.');
+        return null;
+      }
+    } catch (err) {
+      console.error('Erro ao buscar cliente:', err);
+      setError('Erro na requisição do cliente.');
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  }, [exibirCliente]);
+
+  // —— CADASTRAR CLIENTE ——  
+  const cadastrarCliente = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      await api.post('/clientes', {
+        nome: inputNome,
+        email: inputEmail,
+        senha: inputSenha,
+        endereco: inputEndereco,
+        telefone: inputTelefone,
+      });
+      await fetchClientes();
+      limparForm();
+    } catch (err) {
+      console.error('Erro ao cadastrar cliente:', err);
+      setError('Falha ao cadastrar o cliente.');
+    } finally {
+      setLoading(false);
+    }
+  }, [
+    inputNome, inputEmail, inputSenha, inputEndereco, inputTelefone,
+    fetchClientes, limparForm
+  ]);
+
+  // —— SALVAR (ATUALIZAR) CLIENTE ——  
+  const salvarCliente = useCallback(async () => {
+    if (!clienteSelecionado) {
+      setError('Nenhum cliente selecionado.');
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    try {
+      await api.put(`/clientes/${clienteSelecionado.id_clientes}`, {
+        nome: inputNome,
+        email: inputEmail,
+        senha: inputSenha,
+        endereco: inputEndereco,
+        telefone: inputTelefone,
+      });
+      await fetchClientes();
+      setClienteSelecionado(null);
+      limparForm();
+    } catch (err) {
+      console.error('Erro ao salvar cliente:', err);
+      setError('Falha ao atualizar o cliente.');
+    } finally {
+      setLoading(false);
+    }
+  }, [
+    clienteSelecionado, inputNome, inputEmail, inputSenha,
+    inputEndereco, inputTelefone, fetchClientes, limparForm
+  ]);
+
+  // —— DELETAR CLIENTE ——  
+  const deletarCliente = useCallback(async (id) => {
+    setLoading(true);
+    setError(null);
+    try {
+      await api.delete(`/clientes/${id}`);
+      await fetchClientes();
+      setClienteSelecionado(null);
+      limparForm();
+    } catch (err) {
+      console.error('Erro ao deletar cliente:', err);
+      setError('Não foi possível deletar o cliente.');
+    } finally {
+      setLoading(false);
+    }
+  }, [fetchClientes, limparForm]);
+
+  // —— LOGIN ——  
+  const loginCliente = useCallback(async () => {
+    setError(null);
+    if (!inputEmail || !inputSenha) {
+      throw new Error('Preencha e-mail e senha');
+    }
+    try {
+      const { data } = await api.post('/login', {
+        email: inputEmail,
+        senha: inputSenha,
+      });
+      return data;
+    } catch (err) {
+      console.error('Erro no login:', err);
+      setError('Falha ao autenticar.');
+      throw err;
+    }
+  }, [inputEmail, inputSenha]);
+
+  // dispara o fetch de clientes quando o hook monta
+  useEffect(() => {
+    fetchClientes();
+  }, [fetchClientes]);
 
   return {
-    // estados
-    clientes, clienteSelecionado,
+    // dados
+    clientes,
+    clienteSelecionado,
+    // inputs
     inputNome, inputEmail, inputSenha, inputEndereco, inputTelefone,
     // setters
     setInputNome, setInputEmail, setInputSenha,
     setInputEndereco, setInputTelefone,
+    // flags
+    loading, error,
     // ações
-    fetchClientes, cadastrarCliente, salvarCliente,
-    buscarClientePorId, deletarCliente, loginCliente,
+    fetchClientes,
+    buscarClientePorId,
+    cadastrarCliente,
+    salvarCliente,
+    deletarCliente,
+    loginCliente,
     limparForm,
   };
 }

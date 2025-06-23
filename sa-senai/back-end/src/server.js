@@ -6,7 +6,7 @@ const app = express();
 const pool = mysql.createPool({
     host: 'localhost',
     user: 'root',      // Altere para o nome do seu user no MySQL
-    password: 'Noslig747!',    // Altere para a senha correta
+    password: 'senai',    // Altere para a senha correta
     database: 'crud_cliente_demo',
     waitForConnections: true,
     connectionLimit: 10,

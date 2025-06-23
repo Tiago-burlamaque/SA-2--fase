@@ -53,7 +53,6 @@ export default function CadastroCliente() {
       <div className="container-cadastro-box">
         <div className="container-topo">
           <h1>Cadastro</h1>
-          <img src="public/images/Icon.svg" alt="Logo" />
         </div>
 
         <form onSubmit={handleSubmit}>
@@ -90,8 +89,6 @@ export default function CadastroCliente() {
             />
           </div>
 
-          { /* Estes campos são opcionais no UI de cadastro, mas o hook envia para o servidor.
-               Se não quiser mostrá-los agora, eles ficarão com string vazia. */ }
           <div className="input-group">
             <label htmlFor="endereco">Endereço:</label>
             <input
@@ -119,7 +116,7 @@ export default function CadastroCliente() {
               Cadastrar
             </button>
             <button
-              className="btn-limpar"
+              className="btn-cad"
               type="button"
               onClick={limparForm}
             >

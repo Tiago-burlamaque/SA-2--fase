@@ -67,7 +67,7 @@ return (
           />
         </div>
 
-        <button type="submit">Entrar</button>
+        <button className='btn-log' type="submit">Entrar</button>
       </form>
     </div>
   </div>

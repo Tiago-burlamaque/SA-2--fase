@@ -12,11 +12,13 @@ export default function CadastroCliente() {
   // Consome do hook apenas o que o cadastro precisa
   const {
     inputNome,
+    inputCpf,
     inputEmail,
     inputSenha,
     inputEndereco,
     inputTelefone,
     setInputNome,
+    setInputCpf,
     setInputEmail,
     setInputSenha,
     setInputEndereco,
@@ -73,8 +75,8 @@ export default function CadastroCliente() {
               id="cpf"
               type="text"
               placeholder="Digite apenas números"
-              value={inputNome}
-              onChange={(e) => setInputNome(e.target.value)}
+              value={inputCpf}
+              onChange={(e) => setInputCpf(e.target.value)}
             />
           </div>
 

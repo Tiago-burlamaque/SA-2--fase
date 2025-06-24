@@ -33,6 +33,21 @@ input{
     margin: 10px;
 }
 .btn-cad{
+    width: 10vw;
+    padding: 14px;
+    font-size: 20px;
+    margin: 10px;
+    margin-right: 10px;
+    border-radius: 5px;
+    border: 1px solid var(--cor-aviso);
+    background-color: var(--cor-aviso);
+}
+.btn-cad:hover{
+    box-shadow:0 0 20px var(--cor-aviso);
+    transition-duration: 1s;
+    cursor: pointer;
+}
+.btn-clean{
     width: 30vw;
     padding: 14px;
     font-size: 20px;
@@ -42,23 +57,8 @@ input{
     border: 1px solid var(--cor-sucesso);
     background-color: var(--cor-sucesso);
 }
-.btn-cad:hover{
-    box-shadow:0 0 20px var(--cor-sucesso);
-    transition-duration: 1s;
-    cursor: pointer;
-}
-.btn-clean{
-    width: 10vw;
-    padding: 14px;
-    font-size: 20px;
-    margin: 10px;
-    margin-right: 10px;
-    border-radius: 5px;
-    border: 1px solid var(--cor-erro);
-    background-color: var(--cor-erro);
-}
 .btn-clean:hover{
-    box-shadow:0 0 20px var(--cor-erro);
+    box-shadow:0 0 20px var(--cor-sucesso);
     transition-duration: 1s;
     cursor: pointer;
 }

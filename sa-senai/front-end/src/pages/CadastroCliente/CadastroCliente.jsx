@@ -114,14 +114,14 @@ export default function CadastroCliente() {
 
           <div className="botoes-cadastro">
             <button className="btn-cad" type="submit">
-              Cadastrar
+            Limpar
             </button>
             <button
               className="btn-clean"
               type="button"
               onClick={limparForm}
-            >
-              Limpar
+              >
+              Cadastrar
             </button>
           </div>
           </div>

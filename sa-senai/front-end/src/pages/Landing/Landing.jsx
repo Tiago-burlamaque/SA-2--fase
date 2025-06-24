@@ -1,10 +1,9 @@
 import "./Landing.css"
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 // import minhaImagem from './public/images/Frame_4-removebg-preview.png'
 
 function Landing(){
-
   return (
     <>
         <div className="container">

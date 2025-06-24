@@ -6,6 +6,7 @@ import axios from 'axios';
   const [clientes, setClientes] = useState([]);
   const [clienteSelecionado, setClienteSelecionado] = useState(null);
   const [inputNome, setInputNome] = useState('');
+  const [inputCpf, setInputCpf] = useState('');
   const [inputEmail, setInputEmail] = useState('');
   const [inputEndereco, setInputEndereco] = useState('');
   const [inputTelefone, setInputTelefone] = useState('');
@@ -30,6 +31,7 @@ import axios from 'axios';
     try {
       const cliente = {
         nome: inputNome,
+        cpf: inputCpf,
         endereco: inputEndereco,
         email: inputEmail,
         telefone: inputTelefone,
@@ -49,6 +51,7 @@ import axios from 'axios';
     try {
       const cliente = {
         nome: inputNome,
+        cpf: inputCpf,
         endereco: inputEndereco,
         email: inputEmail,
         telefone: inputTelefone,
@@ -90,6 +93,7 @@ import axios from 'axios';
   // Função para limpar os campos do formulário
   const limparForm = () => {
     setInputNome('');
+    setInputCpf('');
     setInputEmail('');
     setInputEndereco('');
     setInputTelefone('');
@@ -98,6 +102,7 @@ import axios from 'axios';
   // Função que popula os inputs com os dados do cliente selecionado
   const exibirCliente = (cliente) => {
     setInputNome(cliente.nome || '');
+    setInputCpf(cliente.cpf || '');
     setInputEmail(cliente.email || '');
     setInputEndereco(cliente.endereco || '');
     setInputTelefone(cliente.telefone || '');

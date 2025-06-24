@@ -62,3 +62,28 @@ input{
     transition-duration: 1s;
     cursor: pointer;
 }
+
+#nome{
+    border: none;
+    outline: none;
+    border-bottom: 5px solid var(--cor-primaria-escura);
+    background-color: var(--cor);
+}
+#endereco{
+    border: none;
+    outline: none;
+    border-bottom: 5px solid var(--cor-primaria-escura);
+    background-color: var(--cor);
+}
+#telefone{
+    border: none;
+    outline: none;
+    border-bottom: 5px solid var(--cor-primaria-escura);
+    background-color: var(--cor);
+}
+#cpf{
+    border: none;
+    outline: none;
+    border-bottom: 5px solid var(--cor-primaria-escura);
+    background-color: var(--cor);
+}

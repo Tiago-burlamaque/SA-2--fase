@@ -67,6 +67,16 @@ export default function CadastroCliente() {
               onChange={(e) => setInputNome(e.target.value)}
             />
           </div>
+          <div className="input-group">
+            <label htmlFor="cpf">Cpf:</label>
+            <input
+              id="cpf"
+              type="text"
+              placeholder="Digite apenas números"
+              value={inputNome}
+              onChange={(e) => setInputNome(e.target.value)}
+            />
+          </div>
 
           <div className="input-group">
             <label htmlFor="email">E-mail:</label>

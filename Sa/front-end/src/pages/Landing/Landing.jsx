@@ -14,7 +14,7 @@ function Landing(){
 
           <div className="descricao-landing">
 
-            <img src="public/images/Frame_4-removebg-preview.png" alt="" width={"1000px"}/>
+            <img src="../public/images/Frame_4-removebg-preview.png" alt="" width={"1000px"}/>
             <p>Um aplicativo de rotinas para crianças autistas pode melhorar significativamente a vida dessas crianças e de suas famílias. Com recursos visuais e lembretes personalizados, ele ajuda na organização do dia a dia, reduz crises de ansiedade e facilita a comunicação entre pais, cuidadores e educadores. Essa tecnologia promove inclusão, autonomia e contribui para uma sociedade mais empática e preparada para a diversidade.
             </p>
             </div>

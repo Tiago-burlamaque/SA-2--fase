@@ -56,6 +56,7 @@ export default function CadastroCliente() {
         </div>
 
         <form onSubmit={handleSubmit}>
+        <div className="container-form">
           <div className="input-group">
             <label htmlFor="nome">Nome:</label>
             <input
@@ -116,12 +117,13 @@ export default function CadastroCliente() {
               Cadastrar
             </button>
             <button
-              className="btn-cad"
+              className="btn-clean"
               type="button"
               onClick={limparForm}
             >
               Limpar
             </button>
+          </div>
           </div>
         </form>
       </div>

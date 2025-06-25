@@ -1,5 +1,6 @@
 import "./Landing.css"
 import React from "react";
+<<<<<<< HEAD
 import { useNavigate } from "react-router-dom";
 // import minhaImagem from './public/images/Frame_4-removebg-preview.png'
 
@@ -11,6 +12,12 @@ function Landing(){
     navigate("/cadastro"); // Altere para a rota correta
   };
   
+=======
+import { Link, useNavigate } from "react-router-dom";
+// import minhaImagem from './public/images/Frame_4-removebg-preview.png'
+
+function Landing(){
+>>>>>>> 1e5a8bd75807c553893fd758cd456e5acc84fe33
   return (
     <>
         <div className="container">

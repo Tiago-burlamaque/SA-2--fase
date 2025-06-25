@@ -122,6 +122,34 @@ app.post('/login', async (req, res) => {
       res.json({ sucesso: true, cliente: rows[0] }); 
     });
 
+// rota GET todas as rotinas de um cliente
+app.get('/clientes/:id/rotinas', async (req, res) => {
+  const rotinas = await db('rotinas').where({ cliente_id: req.params.id });
+  res.json(rotinas);
+});
+
+// rota POST para criar uma rotina
+app.post('/rotinas', async (req, res) => {
+  const { cliente_id, titulo, data_hora, recorrencia } = req.body;
+  const [id] = await db('rotinas').insert({ cliente_id, titulo, data_hora, recorrencia });
+  res.status(201).json({ id, cliente_id, titulo, data_hora, recorrencia });
+});
+
+// rota PUT para atualizar
+app.put('/rotinas/:id', async (req, res) => {
+  const { titulo, data_hora, recorrencia } = req.body;
+  await db('rotinas').where({ id_rotina: req.params.id })
+    .update({ titulo, data_hora, recorrencia });
+  res.sendStatus(204);
+});
+
+// rota DELETE
+app.delete('/rotinas/:id', async (req, res) => {
+  await db('rotinas').where({ id_rotina: req.params.id }).del();
+  res.sendStatus(204);
+});
+
+
 
 
 const PORT = 3001;

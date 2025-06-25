@@ -64,7 +64,8 @@ export default function PaginaInicial() {
   };
 
   return (
-    <div className="pagina-inicial">
+      
+      <div className="pagina-inicial">
       <h1>Minhas Rotinas</h1>
       <button onClick={() => abrirModal(null)}>+ Nova Rotina</button>
       {loading && <p>Carregando...</p>}

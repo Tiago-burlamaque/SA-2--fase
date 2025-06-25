@@ -87,3 +87,49 @@
   background: #6c757d;
   color: #fff;
 }
+
+.rotinas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.rotina-card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rotina-card h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.rotina-card time {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.rotina-card p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.rotina-card .btn-editar {
+  margin-top: auto;
+  align-self: flex-end;
+  background: #f0f0f0;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.rotina-card .btn-editar:hover {
+  background: #e0e0e0;
+}

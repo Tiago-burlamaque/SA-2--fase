@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { useContext } from "react";
+// src/pages/PaginaInicial.jsx
+import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useClientes } from "../../common/service/useClientes"; 
@@ -7,134 +7,190 @@ import "./PaginaInicial.css";
 
 export default function PaginaInicial() {
   const navigate = useNavigate();
-  const [modalOpen, setModalOpen] = useState(false);
   const { user, logout } = useContext(AuthContext);
   const clienteId = user?.id_clientes;
 
+  // — estados para editar conta —
+  const [modalContaOpen, setModalContaOpen] = useState(false);
+
+  // — estados para rotinas —
+  const [modalRotinaOpen, setModalRotinaOpen] = useState(false);
+  const [rotinas, setRotinas] = useState([]);
+  const [editIndex, setEditIndex] = useState(null);
+
+  // — campos do formulário de rotina —
+  const [titulo, setTitulo] = useState("");
+  const [dataHora, setDataHora] = useState("");
+  const [recorrencia, setRecorrencia] = useState("Nenhuma");
+
+  // — hook de cliente (sua lógica já existente) —
   const {
-    inputNome,
-    inputEmail,
-    inputSenha,
-    inputEndereco,
-    inputTelefone,
-    setInputNome,
-    setInputEmail,
-    setInputSenha,
-    setInputEndereco,
-    setInputTelefone,
-    buscarClientePorId,
-    salvarCliente,
-    deletarCliente,
-    limparForm,
+    inputNome, inputEmail, inputSenha, inputEndereco, inputTelefone,
+    setInputNome, setInputEmail, setInputSenha, setInputEndereco, setInputTelefone,
+    buscarClientePorId, salvarCliente, deletarCliente, limparForm
   } = useClientes();
 
+  // — carregar dados de conta —
   useEffect(() => {
-    if (modalOpen && clienteId) {
+    if (modalContaOpen && clienteId) {
       buscarClientePorId(clienteId)
-        .then((cliente) => {
-          if (!cliente) {
-            console.warn("Cliente não encontrado.");
-            return;
-          }
-          console.log("Cliente encontrado:", cliente);
-  
-          setInputNome(cliente.nome || "");
-          setInputEmail(cliente.email || "");
-          setInputSenha(cliente.senha || "");
-          setInputEndereco(cliente.endereco || "");
-          setInputTelefone(cliente.telefone || "");
+        .then(c => {
+          if (!c) { logout(); navigate("/login"); return; }
+          setInputNome(c.nome); setInputEmail(c.email);
+          setInputSenha(c.senha); setInputEndereco(c.endereco);
+          setInputTelefone(c.telefone);
         })
-        .catch((err) => {
-          console.warn("Erro ao buscar cliente:", err);
-          logout();
-          navigate("/login");
-        });
+        .catch(() => { logout(); navigate("/login"); });
     }
-  }, [modalOpen, clienteId, buscarClientePorId, navigate]);  
+  }, [modalContaOpen]);
 
-
-  const handleSave = async () => {
-    try {
-      await salvarCliente();
-      setModalOpen(false);
-    } catch (err) {
-      console.error("Erro ao salvar cliente:", err);
+  // — abrir modal de rotina para criar ou editar —
+  const abrirModalRotina = (idx = null) => {
+    if (idx !== null) {
+      const r = rotinas[idx];
+      setTitulo(r.titulo);
+      setDataHora(r.dataHora);
+      setRecorrencia(r.recorrencia);
+    } else {
+      setTitulo("");
+      setDataHora("");
+      setRecorrencia("Nenhuma");
     }
+    setEditIndex(idx);
+    setModalRotinaOpen(true);
   };
 
-  const handleDelete = async () => {
-    try {
-      await deletarCliente(clienteId);
-      limparForm();
-      localStorage.removeItem("clienteId");
-      localStorage.removeItem("cliente");
-      setModalOpen(false);
-      navigate("/login");
-    } catch (err) {
-      console.error("Erro ao deletar:", err);
-    }
+  // — salvar rotina (create / update) —
+  const salvarRotina = () => {
+    const nova = { titulo, dataHora, recorrencia };
+    setRotinas(prev => {
+      if (editIndex !== null) {
+        // substitui
+        const arr = [...prev];
+        arr[editIndex] = nova;
+        return arr;
+      }
+      // adiciona
+      return [...prev, nova];
+    });
+    fecharModalRotina();
   };
 
-  const handleCancel = () => {
+  const excluirRotina = () => {
+    if (editIndex === null) return;
+    setRotinas(prev => prev.filter((_, i) => i !== editIndex));
+    fecharModalRotina();
+  };
+
+  const fecharModalRotina = () => {
+    setModalRotinaOpen(false);
+    setEditIndex(null);
+    setTitulo(""); setDataHora(""); setRecorrencia("Nenhuma");
+  };
+
+  // — conta: salvar, deletar, cancelar —
+  const handleSaveConta = async () => { await salvarCliente(); setModalContaOpen(false); };
+  const handleDeleteConta = async () => {
+    await deletarCliente(clienteId);
     limparForm();
-    setModalOpen(false);
+    logout();
+    navigate("/login");
   };
+  const handleCancelConta = () => { limparForm(); setModalContaOpen(false); };
 
   return (
     <div className="pagina-inicial">
       <h1>Bem-vindo ao seu painel</h1>
+      <button onClick={() => setModalContaOpen(true)}>Editar / Excluir Conta</button>
+      <button onClick={() => abrirModalRotina()}>+ Nova Rotina</button>
 
-      <button className="btn-abrir-modal" onClick={() => setModalOpen(true)}>
-        Editar / Excluir Conta
+ {/* grid de rotinas */}
+<div className="rotinas-grid">
+  {rotinas.length === 0 && <p>Você não tem rotinas ainda.</p>}
+  {rotinas.map((r, i) => (
+    <div className="rotina-card" key={i}>
+      <h3>{r.titulo}</h3>
+      <time>
+        {new Date(r.dataHora).toLocaleDateString()} –{" "}
+        {new Date(r.dataHora).toLocaleTimeString()}
+      </time>
+      <p>Recorrência: {r.recorrencia}</p>
+      <button
+        className="btn-editar"
+        onClick={() => abrirModalRotina(i)}
+      >
+        ✎ Editar
       </button>
+    </div>
+  ))}
+</div>
 
-      {modalOpen && (
+
+      {/* modal de conta */}
+      {modalContaOpen && (
         <div className="modal-overlay">
           <div className="modal-conteudo">
             <h2>Editar Conta</h2>
-
             <label>Nome</label>
-            <input
-              value={inputNome || ""}
-              onChange={(e) => setInputNome(e.target.value)}
-            />
-
+            <input value={inputNome} onChange={e => setInputNome(e.target.value)} />
             <label>E-mail</label>
-            <input
-              type="email"
-              value={inputEmail || ""}
-              onChange={(e) => setInputEmail(e.target.value)}
-            />
-
+            <input type="email" value={inputEmail} onChange={e => setInputEmail(e.target.value)} />
             <label>Senha</label>
-            <input
-              type="password"
-              value={inputSenha || ""}
-              onChange={(e) => setInputSenha(e.target.value)}
-            />
-
+            <input type="password" value={inputSenha} onChange={e => setInputSenha(e.target.value)} />
             <label>Endereço</label>
+            <input value={inputEndereco} onChange={e => setInputEndereco(e.target.value)} />
+            <label>Telefone</label>
+            <input value={inputTelefone} onChange={e => setInputTelefone(e.target.value)} />
+            <div className="modal-botoes">
+              <button onClick={handleSaveConta}>Salvar</button>
+              <button onClick={handleDeleteConta}>Excluir Conta</button>
+              <button onClick={handleCancelConta}>Cancelar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* modal de criação/edição de rotina */}
+      {modalRotinaOpen && (
+        <div className="modal-overlay">
+          <div className="modal-conteudo">
+            <h2>{editIndex !== null ? "Editar Rotina" : "Nova Rotina"}</h2>
+
+            <label>Título</label>
             <input
-              value={inputEndereco || ""}
-              onChange={(e) => setInputEndereco(e.target.value)}
+              type="text"
+              value={titulo}
+              onChange={e => setTitulo(e.target.value)}
             />
 
-            <label>Telefone</label>
+            <label>Data e Hora</label>
             <input
-              value={inputTelefone || ""}
-              onChange={(e) => setInputTelefone(e.target.value)}
+              type="datetime-local"
+              value={dataHora}
+              onChange={e => setDataHora(e.target.value)}
             />
+
+            <label>Recorrência</label>
+            <select
+              value={recorrencia}
+              onChange={e => setRecorrencia(e.target.value)}
+            >
+              <option>Nenhuma</option>
+              <option>Diária</option>
+              <option>Semanal</option>
+              <option>Mensal</option>
+            </select>
 
             <div className="modal-botoes">
-              <button className="btn-salvar" onClick={handleSave}>
-                Salvar
+              <button onClick={salvarRotina}>
+                {editIndex !== null ? "Atualizar" : "Criar"}
               </button>
-              <button className="btn-excluir" onClick={handleDelete}>
-                Excluir Conta
-              </button>
-              <button className="btn-cancelar" onClick={handleCancel}>
-                Cancelar
-              </button>
+              {editIndex !== null && (
+                <button onClick={excluirRotina} className="btn-excluir">
+                  Excluir Rotina
+                </button>
+              )}
+              <button onClick={fecharModalRotina}>Cancelar</button>
             </div>
           </div>
         </div>

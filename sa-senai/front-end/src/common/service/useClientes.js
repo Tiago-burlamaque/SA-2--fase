@@ -113,7 +113,7 @@ export function useClientes() {
       await api.put(`/clientes/${clienteSelecionado.id_clientes}`, {
         nome: inputNome,
         email: inputEmail,
-        senha: inputSenha,
+        senha: inputSenha,  
         endereco: inputEndereco,
         telefone: inputTelefone,
       });

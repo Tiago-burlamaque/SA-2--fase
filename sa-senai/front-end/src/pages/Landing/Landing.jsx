@@ -1,10 +1,16 @@
 import "./Landing.css"
 import React from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 // import minhaImagem from './public/images/Frame_4-removebg-preview.png'
 
 function Landing(){
+  const navigate = useNavigate(); // Hook para navegação
 
+  // Função para redirecionar para a página de cadastro
+  const ChamarCadastro = () => {
+    navigate("/cadastro"); // Altere para a rota correta
+  };
+  
   return (
     <>
         <div className="container">
@@ -22,7 +28,7 @@ function Landing(){
           <div className="botao-landing" >
 
             {/* <button className="btn-rotina"><span className="vermelho">Crie </span><span className="amarelo">sua ro</span> <span className="roxo">tina ag</span> <span className="vermelho">ora</span></button> */}
-            <button>Crie sua rotina</button>
+            <button onClick={ChamarCadastro}>Crie sua rotina</button>
             
           </div>
 

@@ -40,7 +40,7 @@ export default function CadastroCliente() {
       
       toast.success("Cadastro realizado com sucesso!", {
         onClose: () => navigate("/login"),
-        autoClose: 1500,
+        autoClose: 500,
       });
     } catch (error) {
       // O hook já loga o erro no console, mas aqui mostramos no toast

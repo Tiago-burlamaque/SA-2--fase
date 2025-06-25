@@ -42,10 +42,10 @@ app.get('/clientes/:id', async (req, res) => {
 
 // Endpoint para cadastrar um novo cliente (completo: nome, endereco, email, telefone, senha)
 app.post('/clientes', async (req, res) => {
-    const { nome, endereco, email, telefone, senha } = req.body;
+    const { nome, cpf, endereco, email, telefone, senha } = req.body;
   
     // Verifica se todos os campos obrigatórios foram preenchidos
-    if (!nome || !endereco || !email || !telefone || !senha) {
+    if (!nome || !cpf || !endereco || !email || !telefone || !senha) {
       return res.status(400).json({ error: "Preencha todos os campos obrigatórios!" });
     }
   
@@ -62,8 +62,8 @@ app.post('/clientes', async (req, res) => {
   
       // Se o e-mail não existe, realiza a inserção do novo cliente
       const [result] = await pool.query(
-        "INSERT INTO clientes (nome, endereco, email, telefone, senha) VALUES (?, ?, ?, ?, ?)",
-        [nome, endereco, email, telefone, senha]
+        "INSERT INTO clientes (nome, cpf, endereco, email, telefone, senha) VALUES (?, ?, ?, ?, ?)",
+        [nome, cpf, endereco, email, telefone, senha]
       );
   
       // Busca o cliente recém-cadastrado para retornar os dados
@@ -82,11 +82,11 @@ app.post('/clientes', async (req, res) => {
 
 app.put('/clientes/:id', async (req, res) => {
     const { id } = req.params;
-    const { nome, endereco, email, telefone, senha } = req.body;
+    const { nome, cpf, endereco, email, telefone, senha } = req.body;
     try {
         const [result] = await pool.query(
-    'UPDATE clientes SET nome = ?, endereco = ?, email = ?, telefone = ?, senha = ? WHERE id_clientes = ?',
-    [nome, endereco, email, telefone, senha, id]
+    'UPDATE clientes SET nome = ?, cpf = ?, endereco = ?, email = ?, telefone = ?, senha = ? WHERE id_clientes = ?',
+    [nome, cpf, endereco, email, telefone, senha, id]
     );
         if (result.affectedRows === 0) {
             return res.status(404).json({ error: 'Cliente não encontrado' });

@@ -1,23 +1,9 @@
 import "./Landing.css"
 import React from "react";
-<<<<<<< HEAD
-import { useNavigate } from "react-router-dom";
-// import minhaImagem from './public/images/Frame_4-removebg-preview.png'
-
-function Landing(){
-  const navigate = useNavigate(); // Hook para navegação
-
-  // Função para redirecionar para a página de cadastro
-  const ChamarCadastro = () => {
-    navigate("/cadastro"); // Altere para a rota correta
-  };
-  
-=======
 import { Link, useNavigate } from "react-router-dom";
 // import minhaImagem from './public/images/Frame_4-removebg-preview.png'
 
 function Landing(){
->>>>>>> 95c466e5bc0be7d9c034bf980c37a32b741b22af
   return (
     <>
         <div className="container">

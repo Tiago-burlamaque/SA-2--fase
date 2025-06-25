@@ -11,7 +11,6 @@ export function useClientes() {
   const [clienteSelecionado, setClienteSelecionado] = useState(null);
   // —— estados de formulário ——
   const [inputNome, setInputNome]             = useState('');
-  const [inputCpf, setInputCpf]             = useState('');
   const [inputEmail, setInputEmail]           = useState('');
   const [inputSenha, setInputSenha]           = useState('');
   const [inputEndereco, setInputEndereco]     = useState('');
@@ -23,7 +22,6 @@ export function useClientes() {
   // limpa todos os campos do formulário
   const limparForm = useCallback(() => {
     setInputNome('');
-    setInputCpf('');
     setInputEmail('');
     setInputSenha('');
     setInputEndereco('');
@@ -34,7 +32,6 @@ export function useClientes() {
   const exibirCliente = useCallback((c) => {
     if (!c) return;
     setInputNome(c.nome || '');
-    setInputCpf(c.cpf || '');
     setInputEmail(c.email || '');
     setInputSenha(c.senha || '');
     setInputEndereco(c.endereco || '');
@@ -86,7 +83,6 @@ export function useClientes() {
     try {
       await api.post('/clientes', {
         nome: inputNome,
-        cpf: inputCpf,
         email: inputEmail,
         senha: inputSenha,
         endereco: inputEndereco,
@@ -101,7 +97,7 @@ export function useClientes() {
       setLoading(false);
     }
   }, [
-    inputNome, inputCpf, inputEmail, inputSenha, inputEndereco, inputTelefone,
+    inputNome, inputEmail, inputSenha, inputEndereco, inputTelefone,
     fetchClientes, limparForm
   ]);
 
@@ -116,9 +112,8 @@ export function useClientes() {
     try {
       await api.put(`/clientes/${clienteSelecionado.id_clientes}`, {
         nome: inputNome,
-        cpf: inputCpf,
         email: inputEmail,
-        senha: inputSenha,  
+        senha: inputSenha,
         endereco: inputEndereco,
         telefone: inputTelefone,
       });
@@ -132,7 +127,7 @@ export function useClientes() {
       setLoading(false);
     }
   }, [
-    clienteSelecionado, inputNome, inputCpf, inputEmail, inputSenha,
+    clienteSelecionado, inputNome, inputEmail, inputSenha,
     inputEndereco, inputTelefone, fetchClientes, limparForm
   ]);
 
@@ -182,9 +177,9 @@ export function useClientes() {
     clientes,
     clienteSelecionado,
     // inputs
-    inputNome, inputCpf, inputEmail, inputSenha, inputEndereco, inputTelefone,
+    inputNome, inputEmail, inputSenha, inputEndereco, inputTelefone,
     // setters
-    setInputNome, setInputCpf, setInputEmail, setInputSenha,
+    setInputNome, setInputEmail, setInputSenha,
     setInputEndereco, setInputTelefone,
     // flags
     loading, error,

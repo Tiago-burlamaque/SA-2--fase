@@ -12,13 +12,11 @@ export default function CadastroCliente() {
   // Consome do hook apenas o que o cadastro precisa
   const {
     inputNome,
-    inputCpf,
     inputEmail,
     inputSenha,
     inputEndereco,
     inputTelefone,
     setInputNome,
-    setInputCpf,
     setInputEmail,
     setInputSenha,
     setInputEndereco,
@@ -42,7 +40,7 @@ export default function CadastroCliente() {
       
       toast.success("Cadastro realizado com sucesso!", {
         onClose: () => navigate("/login"),
-        autoClose: 500,
+        autoClose: 1500,
       });
     } catch (error) {
       // O hook já loga o erro no console, mas aqui mostramos no toast
@@ -75,8 +73,8 @@ export default function CadastroCliente() {
               id="cpf"
               type="text"
               placeholder="Digite apenas números"
-              value={inputCpf}
-              onChange={(e) => setInputCpf(e.target.value)}
+              value={inputNome}
+              onChange={(e) => setInputNome(e.target.value)}
             />
           </div>
 

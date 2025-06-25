@@ -1,69 +1,92 @@
 // src/common/service/useRotinas.js
-import { useState, useCallback } from 'react';
-import axios from 'axios';
+import { useState, useCallback } from "react";
+import axios from "axios";
 
-const api = axios.create({ baseURL: 'http://localhost:3001' });
+// Instância do Axios com baseURL
+const api = axios.create({ baseURL: "http://localhost:3001" });
 
 export function useRotinas() {
+  // Estados
   const [rotinas, setRotinas] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError]     = useState(null);
+  const [error, setError] = useState(null);
 
+  // —— BUSCAR TODAS AS ROTINAS DE UM CLIENTE ——  
   const fetchRotinas = useCallback(async (clienteId) => {
-    setLoading(true); setError(null);
+    setLoading(true);
+    setError(null);
     try {
       const { data } = await api.get(`/clientes/${clienteId}/rotinas`);
       setRotinas(data);
     } catch (err) {
-      console.error(err);
-      setError('Não foi possível carregar rotinas.');
+      console.error("Erro ao buscar rotinas:", err);
+      setError("Não foi possível carregar as rotinas.");
     } finally {
       setLoading(false);
     }
   }, []);
 
+  // —— CRIAR NOVA ROTINA ——  
   const criarRotina = useCallback(async (clienteId, rotina) => {
-    setLoading(true); setError(null);
+    setLoading(true);
+    setError(null);
     try {
-      await api.post('/rotinas', { cliente_id: clienteId, ...rotina });
-      await fetchRotinas(clienteId);
+      const { data } = await api.post("/rotinas", {
+        cliente_id: clienteId,
+        titulo: rotina.titulo,
+        data_hora: rotina.data_hora,
+        recorrencia: rotina.recorrencia || "Nenhuma",
+      });
+      setRotinas((prev) => [...prev, data]); // Adiciona a nova rotina ao estado
     } catch (err) {
-      console.error(err);
-      setError('Falha ao criar rotina.');
+      console.error("Erro ao criar rotina:", err);
+      setError("Falha ao criar rotina.");
     } finally {
       setLoading(false);
     }
-  }, [fetchRotinas]);
+  }, []);
 
+  // —— ATUALIZAR ROTINA ——  
   const atualizarRotina = useCallback(async (clienteId, id, rotina) => {
-    setLoading(true); setError(null);
+    setLoading(true);
+    setError(null);
     try {
-      await api.put(`/rotinas/${id}`, rotina);
-      await fetchRotinas(clienteId);
+      await api.put(`/rotinas/${id}`, {
+        titulo: rotina.titulo,
+        data_hora: rotina.data_hora,
+        recorrencia: rotina.recorrencia,
+      });
+      await fetchRotinas(clienteId); // Atualiza a lista de rotinas
     } catch (err) {
-      console.error(err);
-      setError('Falha ao atualizar rotina.');
+      console.error("Erro ao atualizar rotina:", err);
+      setError("Falha ao atualizar rotina.");
     } finally {
       setLoading(false);
     }
   }, [fetchRotinas]);
 
+  // —— DELETAR ROTINA ——  
   const deletarRotina = useCallback(async (clienteId, id) => {
-    setLoading(true); setError(null);
+    setLoading(true);
+    setError(null);
     try {
       await api.delete(`/rotinas/${id}`);
-      await fetchRotinas(clienteId);
+      setRotinas((prev) => prev.filter((r) => r.id_rotina !== id)); // Remove do estado
     } catch (err) {
-      console.error(err);
-      setError('Falha ao deletar rotina.');
+      console.error("Erro ao deletar rotina:", err);
+      setError("Falha ao deletar rotina.");
     } finally {
       setLoading(false);
     }
-  }, [fetchRotinas]);
+  }, []);
 
   return {
-    rotinas, loading, error,
-    fetchRotinas, criarRotina,
-    atualizarRotina, deletarRotina
+    rotinas,
+    loading,
+    error,
+    fetchRotinas,
+    criarRotina,
+    atualizarRotina,
+    deletarRotina,
   };
 }

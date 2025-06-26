@@ -9,33 +9,26 @@ export const AuthContext = createContext({
 });
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-
-  // Carrega do storage ao montar
-  useEffect(() => {
+  // já inicializa o estado lendo do localStorage
+  const [user, setUser] = useState(() => {
     const stored = localStorage.getItem("cliente");
-    if (stored) {
-      try {
-        setUser(JSON.parse(stored));
-      } catch {}
-    }
-  }, []);
-
-  // Sempre que o user mudar, atualiza o storage
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem("cliente", JSON.stringify(user));
-    } else {
-      localStorage.removeItem("cliente");
-    }
-  }, [user]);
+    return stored ? JSON.parse(stored) : null;
+  });
+    
+  // useEffect(() => {
+  //   if (user) {
+  //     localStorage.setItem("cliente", JSON.stringify(user));
+  //   } else {
+  //     localStorage.removeItem("cliente");
+  //   }
+  // }, [user]);
 
   // login: salva o objeto completo vindo do backend
   const login = useCallback((cliente) => {
     setUser(cliente);
   }, []);
 
-  // logout: limpa tudo
+  // logout: limpa tudos
   const logout = useCallback(() => {
     setUser(null);
   }, []);

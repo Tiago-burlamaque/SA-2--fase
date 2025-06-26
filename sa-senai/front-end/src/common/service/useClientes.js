@@ -97,24 +97,29 @@ const uploadAvatar = async (clienteId, file) => {
     setLoading(true);
     setError(null);
     try {
-      await api.post('/clientes', {
-        nome: inputNome,
-        cpf: inputCpf,
-        email: inputEmail,
-        senha: inputSenha,
-        endereco: inputEndereco,
-        telefone: inputTelefone,
+      const { data } = await api.post("/clientes", {
+        nome:      inputNome,
+        cpf:       inputCpf,
+        endereco:  inputEndereco,
+        email:     inputEmail,
+        telefone:  inputTelefone,
+        senha:     inputSenha,
       });
+      // Se quiser devolver o novo cliente para o chamador:
       await fetchClientes();
       limparForm();
+      return data; 
     } catch (err) {
-      console.error('Erro ao cadastrar cliente:', err);
-      setError('Falha ao cadastrar o cliente.');
+      console.error("Erro ao cadastrar cliente:", err);
+      // guarda a mensagem no estado, mas também lança
+      setError(err.response?.data?.error || "Falha ao cadastrar cliente");
+      throw err;
     } finally {
       setLoading(false);
     }
   }, [
-    inputNome, inputCpf, inputEmail, inputSenha, inputEndereco, inputTelefone,
+    inputNome, inputCpf, inputEndereco,
+    inputEmail, inputTelefone, inputSenha,
     fetchClientes, limparForm
   ]);
 

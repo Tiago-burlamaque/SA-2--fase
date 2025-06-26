@@ -26,15 +26,12 @@ export default function CadastroCliente() {
   } = useClientes();
 
   // Handler do form: chama a função do hook, trata toast e redireciona
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
-
-    // Checa validação mínima
     if (!inputNome || !inputEmail || !inputSenha) {
       toast.error("Nome, e-mail e senha são obrigatórios!");
       return;
     }
-
     try {
       await cadastrarCliente();
       toast.success("Cadastro realizado com sucesso!", {
@@ -42,7 +39,8 @@ export default function CadastroCliente() {
         autoClose: 500,
       });
     } catch (error) {
-      toast.error(error?.response?.data?.error || "Erro ao cadastrar cliente");
+      // aqui de fato capturamos o erro lançado
+      toast.error(error.response?.data?.error || "Erro ao cadastrar cliente");
     }
   };
 

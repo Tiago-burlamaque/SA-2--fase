@@ -8,7 +8,8 @@ cpf BIGINT UNIQUE,
 email VARCHAR (100),
 senha VARCHAR (100),
 endereco VARCHAR (100),
-telefone BIGINT
+telefone BIGINT,
+avatar_url VARCHAR(255) NULL
 );
 
  CREATE TABLE rotinas (
@@ -20,3 +21,5 @@ telefone BIGINT
      DEFAULT 'Nenhuma',
    FOREIGN KEY (cliente_id) REFERENCES clientes(id_clientes)
  );
+
+

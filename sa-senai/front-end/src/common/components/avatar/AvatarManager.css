@@ -1,0 +1,91 @@
+/* src/components/AvatarManager/AvatarManager.css */
+.avatar-manager {
+  position: relative;
+  display: inline-block;
+}
+.avatar-img,
+.avatar-fallback {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  color: #555;
+}
+.avatar-actions {
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
+}
+.avatar-actions button {
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+/* Modal */
+.am-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.am-modal {
+  background: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  width: 320px;
+  max-width: 90%;
+}
+.am-modal h2 {
+  margin-top: 0;
+}
+.am-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.am-tabs button {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  cursor: pointer;
+  background: #f0f0f0;
+}
+.am-tabs button.active {
+  background: #ddd;
+}
+.am-library {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.am-lib-item {
+  width: 100%;
+  cursor: pointer;
+  border-radius: 4px;
+  object-fit: cover;
+}
+.am-upload input {
+  width: 100%;
+}
+.am-upload button {
+  margin-top: 8px;
+}
+.am-close {
+  margin-top: 12px;
+  background: transparent;
+  border: none;
+  color: #888;
+  cursor: pointer;
+}
+.error {
+  color: red;
+  font-size: 0.9rem;
+}

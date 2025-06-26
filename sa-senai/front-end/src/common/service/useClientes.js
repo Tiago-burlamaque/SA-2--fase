@@ -20,6 +20,19 @@ export function useClientes() {
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState(null);
 
+  // chama o endpoint de upload, recebe { avatarUrl }
+const uploadAvatar = async (clienteId, file) => {
+  const form = new FormData();
+  form.append("avatar", file);
+
+  const { data } = await api.post(
+    `/clientes/${clienteId}/avatar`,
+    form,
+    { headers: { "Content-Type": "multipart/form-data" } }
+  );
+  return data.avatarUrl; // a nova URL salva no servidor
+};
+
   // limpa todos os campos do formulário
   const limparForm = useCallback(() => {
     setInputNome('');

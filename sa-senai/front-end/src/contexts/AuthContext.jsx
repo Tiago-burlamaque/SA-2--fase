@@ -1,34 +1,52 @@
 // src/contexts/AuthContext.jsx
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useCallback } from "react";
 
 export const AuthContext = createContext({
   user: null,
-  setUser: () => {},
-  login: () => {},
+  login: () => Promise.resolve(),
   logout: () => {},
+  updateUser: () => {},
 });
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
 
-  // 1. No mount, puxa do localStorage pra manter login após refresh
+  // Carrega do storage ao montar
   useEffect(() => {
-    const stored = localStorage.getItem('cliente');
-    if (stored) setUser(JSON.parse(stored));
+    const stored = localStorage.getItem("cliente");
+    if (stored) {
+      try {
+        setUser(JSON.parse(stored));
+      } catch {}
+    }
   }, []);
 
-const login = (cliente) => {
-  setUser(cliente);
-  localStorage.setItem('cliente', JSON.stringify(cliente));
-};
+  // Sempre que o user mudar, atualiza o storage
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem("cliente", JSON.stringify(user));
+    } else {
+      localStorage.removeItem("cliente");
+    }
+  }, [user]);
 
-const logout = () => {
-  setUser(null);
-  localStorage.removeItem('cliente');
-};
+  // login: salva o objeto completo vindo do backend
+  const login = useCallback((cliente) => {
+    setUser(cliente);
+  }, []);
+
+  // logout: limpa tudo
+  const logout = useCallback(() => {
+    setUser(null);
+  }, []);
+
+  // updateUser: mescla novos campos no user atual
+  const updateUser = useCallback((patch) => {
+    setUser((prev) => (prev ? { ...prev, ...patch } : prev));
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ user, setUser, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

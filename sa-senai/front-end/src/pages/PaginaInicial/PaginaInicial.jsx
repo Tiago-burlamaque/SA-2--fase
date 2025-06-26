@@ -1,115 +1,227 @@
-import { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { useRotinas }   from "../../common/service/useRotinas";
+import { useClientes } from "../../common/service/useClientes";
+import { useRotinas } from "../../common/service/useRotinas";
+import AvatarManager from "../../common/components/avatar/AvatarManager";
 import "./PaginaInicial.css";
 
 export default function PaginaInicial() {
   const navigate = useNavigate();
-  const { user, logout } = useContext(AuthContext);
-  const clienteId = user.id_clientes;
+  const { user, logout, updateUser } = useContext(AuthContext);
+  if (!user) return null;
+  const clienteId = user?.id_clientes;
 
-  // hook de rotinas
+  // Hooks
   const {
-    rotinas, fetchRotinas,
-    criarRotina, atualizarRotina, deletarRotina,
-    loading, error
+    inputNome, inputEmail, inputSenha, inputEndereco, inputTelefone,
+    setInputNome, setInputEmail, setInputSenha, setInputEndereco, setInputTelefone,
+    buscarClientePorId, salvarCliente, deletarCliente, limparForm
+  } = useClientes();
+
+  const {
+    rotinas, loading: loadingRotinas, error: errorRotinas,
+    fetchRotinas, criarRotina, atualizarRotina, deletarRotina
   } = useRotinas();
 
-  // estado para controlar modal de rotina
-  const [open, setOpen] = useState(false);
-  const [edit, setEdit] = useState(null);
-  const [titulo, setTitulo]       = useState("");
-  const [dataHora, setDataHora]   = useState("");
+  // Modais
+  const [modalContaOpen, setModalContaOpen] = useState(false);
+  const [modalRotinaOpen, setModalRotinaOpen] = useState(false);
+
+  // Form Rotina
+  const [editIndex, setEditIndex] = useState(null);
+  const [titulo, setTitulo] = useState("");
+  const [dataHora, setDataHora] = useState("");
   const [recorrencia, setRecorrencia] = useState("Nenhuma");
 
-  // ao montar, busca as rotinas do usuário
+  // 1) Busca rotinas ao montar
   useEffect(() => {
-    if (!clienteId) navigate("/login");
-    else fetchRotinas(clienteId);
-  }, [clienteId, fetchRotinas]);
+    if (!clienteId) return navigate("/login");
+    fetchRotinas(clienteId);
+  }, [clienteId, fetchRotinas, navigate]);
 
-  const abrirModal = (idx=null) => {
-    if (idx!==null) {
+  // 2) Quando abre modal de conta, puxa dados do cliente
+  useEffect(() => {
+    if (modalContaOpen && clienteId) {
+      buscarClientePorId(clienteId).catch(() => {
+        logout();
+        navigate("/login");
+      });
+    }
+  }, [modalContaOpen, clienteId, buscarClientePorId, logout, navigate]);
+
+  // Helpers Rotina
+  const openRotinaModal = (idx = null) => {
+    if (idx !== null) {
       const r = rotinas[idx];
       setTitulo(r.titulo);
       setDataHora(r.data_hora);
       setRecorrencia(r.recorrencia);
     } else {
-      setTitulo(""); setDataHora(""); setRecorrencia("Nenhuma");
+      setTitulo("");
+      setDataHora("");
+      setRecorrencia("Nenhuma");
     }
-    setEdit(idx);
-    setOpen(true);
+    setEditIndex(idx);
+    setModalRotinaOpen(true);
   };
 
-  const fecharModal = () => {
-    setOpen(false); setEdit(null);
+  const closeRotinaModal = () => {
+    setModalRotinaOpen(false);
+    setEditIndex(null);
   };
 
-  const handleSalvar = async () => {
-    const obj = { titulo, data_hora: dataHora, recorrencia };
-    if (edit!==null) {
-      await atualizarRotina(clienteId, rotinas[edit].id_rotina, obj);
+  const handleSaveRotina = async () => {
+    const payload = { titulo, data_hora: dataHora, recorrencia };
+    if (editIndex !== null) {
+      await atualizarRotina(clienteId, rotinas[editIndex].id_rotina, payload);
     } else {
-      await criarRotina(clienteId, obj);
+      await criarRotina(clienteId, payload);
     }
-    fecharModal();
+    closeRotinaModal();
   };
 
-  const handleExcluir = async () => {
-    if (edit!==null) {
-      await deletarRotina(clienteId, rotinas[edit].id_rotina);
-      fecharModal();
+  const handleDeleteRotina = async () => {
+    if (editIndex !== null) {
+      await deletarRotina(clienteId, rotinas[editIndex].id_rotina);
+      closeRotinaModal();
     }
+  };
+
+  // Conta
+  const handleSaveConta = async () => {
+    await salvarCliente();
+    setModalContaOpen(false);
+  };
+  const handleDeleteConta = async () => {
+    await deletarCliente(clienteId);
+    limparForm();
+    logout();
+    navigate("/login");
+  };
+  const handleCancelConta = () => {
+    limparForm();
+    setModalContaOpen(false);
   };
 
   return (
-      
-      <div className="pagina-inicial">
-      <h1>Minhas Rotinas</h1>
-      <button onClick={() => abrirModal(null)}>+ Nova Rotina</button>
-      {loading && <p>Carregando...</p>}
-      {error   && <p className="erro">{error}</p>}
+    <div className="pagina-inicial">
+      <h1>Bem-vindo ao seu painel</h1>
+      <header className="header-perfil">
+        <AvatarManager
+          userId={user.id_clientes}
+          initialUrl={user.avatar_url}
+          userName={user.nome}
+          onUpdate={(patch) => updateUser(patch)}
+        />
+        <span>Olá, {user.nome.split(" ")[0]}</span>
+      </header>
+      <div className="acoes">
+        <button onClick={() => setModalContaOpen(true)}>
+          Editar / Excluir Conta
+        </button>
+        <button onClick={() => openRotinaModal()}>+ Nova Rotina</button>
+      </div>
 
+      {/* Grid de Rotinas */}
       <div className="rotinas-grid">
-        {rotinas.map((r,i) => (
+        {loadingRotinas && <p>Carregando rotinas...</p>}
+        {errorRotinas && <p className="erro">{errorRotinas}</p>}
+        {!loadingRotinas && rotinas.length === 0 && (
+          <p>Você não tem rotinas ainda.</p>
+        )}
+        {rotinas.map((r, i) => (
           <div className="rotina-card" key={r.id_rotina}>
             <h3>{r.titulo}</h3>
             <time>{new Date(r.data_hora).toLocaleString()}</time>
             <p>Recorrência: {r.recorrencia}</p>
-            <button onClick={() => abrirModal(i)}>✎ Editar</button>
+            <button onClick={() => openRotinaModal(i)}>✎ Editar</button>
           </div>
         ))}
       </div>
 
-      {open && (
+      {/* Modal Conta */}
+      {modalContaOpen && (
         <div className="modal-overlay">
           <div className="modal-conteudo">
-            <h2>{edit!==null? "Editar Rotina":"Nova Rotina"}</h2>
+            <h2>Editar Conta</h2>
+            <label>Nome</label>
+            <input
+              value={inputNome}
+              onChange={(e) => setInputNome(e.target.value)}
+            />
+            <label>E-mail</label>
+            <input
+              type="email"
+              value={inputEmail}
+              onChange={(e) => setInputEmail(e.target.value)}
+            />
+            <label>Senha</label>
+            <input
+              type="password"
+              value={inputSenha}
+              onChange={(e) => setInputSenha(e.target.value)}
+            />
+            <label>Endereço</label>
+            <input
+              value={inputEndereco}
+              onChange={(e) => setInputEndereco(e.target.value)}
+            />
+            <label>Telefone</label>
+            <input
+              value={inputTelefone}
+              onChange={(e) => setInputTelefone(e.target.value)}
+            />
+            <div className="modal-botoes">
+              <button onClick={handleSaveConta}>Salvar</button>
+              <button onClick={handleDeleteConta}>Excluir Conta</button>
+              <button onClick={handleCancelConta}>Cancelar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Rotina */}
+      {modalRotinaOpen && (
+        <div className="modal-overlay">
+          <div className="modal-conteudo">
+            <h2>{editIndex !== null ? "Editar Rotina" : "Nova Rotina"}</h2>
+
             <label>Título</label>
-            <input value={titulo}       onChange={e => setTitulo(e.target.value)} />
+            <input
+              type="text"
+              value={titulo}
+              onChange={(e) => setTitulo(e.target.value)}
+            />
+
             <label>Data e Hora</label>
-            <input type="datetime-local"
-                   value={dataHora}
-                   onChange={e => setDataHora(e.target.value)} />
+            <input
+              type="datetime-local"
+              value={dataHora}
+              onChange={(e) => setDataHora(e.target.value)}
+            />
+
             <label>Recorrência</label>
-            <select value={recorrencia}
-                    onChange={e => setRecorrencia(e.target.value)}>
+            <select
+              value={recorrencia}
+              onChange={(e) => setRecorrencia(e.target.value)}
+            >
               <option>Nenhuma</option>
               <option>Diária</option>
               <option>Semanal</option>
               <option>Mensal</option>
             </select>
+
             <div className="modal-botoes">
-              <button onClick={handleSalvar}>
-                {edit!==null? "Atualizar":"Criar"}
+              <button onClick={handleSaveRotina}>
+                {editIndex !== null ? "Atualizar" : "Criar"}
               </button>
-              {edit!==null && (
-                <button className="btn-excluir" onClick={handleExcluir}>
-                  Excluir
+              {editIndex !== null && (
+                <button onClick={handleDeleteRotina} className="btn-excluir">
+                  Excluir Rotina
                 </button>
               )}
-              <button onClick={fecharModal}>Cancelar</button>
+              <button onClick={closeRotinaModal}>Cancelar</button>
             </div>
           </div>
         </div>

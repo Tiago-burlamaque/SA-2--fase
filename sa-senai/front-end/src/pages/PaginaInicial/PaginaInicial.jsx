@@ -4,7 +4,6 @@ import { AuthContext } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useClientes } from "../../common/service/useClientes";
 import { useRotinas } from "../../common/service/useRotinas";
-import { useUser } from "../../common/service/useUser";
 
 import AvatarManager from "../../common/components/avatar/AvatarManager";
 import "./PaginaInicial.css";

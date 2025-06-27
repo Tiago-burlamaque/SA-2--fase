@@ -1,135 +1,190 @@
+/* src/pages/PaginaInicial.css */
+
+/* 1. Variáveis de tema */
+:root {
+  --bg-page:       #f0f2f5;
+  --card-bg:       #ffffff;
+  --text-color:    #333;
+  --primary:       #0b61a4;
+  --primary-light: #145a96;
+  --danger:        #e74c3c;
+  --overlay-bg:    rgba(0, 0, 0, 0.5);
+  --modal-bg:      #fff;
+  --border-radius: 8px;
+  --gap:            1rem;
+}
+
+/* 2. Reset e página */
 .pagina-inicial {
-  text-align: center;
+  min-height: 100vh;
+  background-color: var(--bg-page);
   padding: 2rem;
+  font-family: 'Segoe UI', sans-serif;
+  color: var(--text-color);
 }
 
-.btn-abrir-modal {
-  padding: 0.75rem 1.5rem;
-  background: #00d8ff;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-.btn-abrir-modal:hover {
-  background: #007ea7;
-}
-
-/* Overlay que escurece a tela */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0,0,0,0.5);
+/* 3. Cabeçalho do perfil */
+.header-perfil {
   display: flex;
   align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.header-perfil span {
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+/* 4. Área de ações */
+.acoes {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.acoes button {
+  padding: 0.6rem 1.2rem;
+  background-color: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.acoes button:hover {
+  background-color: var(--primary-light);
+}
+
+/* 5. Grid de rotinas */
+.rotinas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--gap);
+}
+.rotina-card {
+  background-color: var(--card-bg);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.rotina-card h3 {
+  margin: 0;
+}
+.rotina-card time,
+.rotina-card p {
+  font-size: 0.9rem;
+  color: #666;
+}
+.rotina-card button {
+  align-self: flex-end;
+  padding: 0.4rem 0.8rem;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.rotina-card button:hover {
+  background: var(--primary-light);
+}
+
+/* 6. Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: var(--overlay-bg);
+  display: flex;
   justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  z-index: 1000;
 }
-
-/* Conteúdo do modal */
 .modal-conteudo {
-  background: #fff;
+  background-color: var(--modal-bg);
+  border-radius: var(--border-radius);
   padding: 2rem;
-  border-radius: 8px;
-  width: 320px;
-  max-width: 90%;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
 }
-
 .modal-conteudo h2 {
   margin-top: 0;
   margin-bottom: 1rem;
-  color: #333;
 }
-
 .modal-conteudo label {
   display: block;
-  margin: 0.5rem 0 0.2rem;
-  font-weight: 600;
+  margin: 0.75rem 0 0.25rem;
+  font-weight: 500;
 }
-
-.modal-conteudo input {
+.modal-conteudo input,
+.modal-conteudo select {
   width: 100%;
-  padding: 0.5rem;
-  margin-bottom: 1rem;
+  padding: 0.6rem;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
+  font-size: 1rem;
 }
-
-/* Botões no rodapé do modal */
 .modal-botoes {
+  margin-top: 1.5rem;
   display: flex;
-  gap: 0.5rem;
-  justify-content: space-between;
+  justify-content: flex-end;
+  gap: 0.75rem;
 }
-
 .modal-botoes button {
-  flex: 1;
-  padding: 0.5rem;
+  padding: 0.6rem 1.2rem;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   cursor: pointer;
+  font-size: 0.95rem;
 }
-
-.btn-salvar {
-  background: #28a745;
+.modal-botoes button:first-child {
+  background-color: var(--primary);
   color: #fff;
+  transition: background 0.2s;
 }
-
-.btn-excluir {
-  background: #dc3545;
+.modal-botoes .btn-excluir {
+  background-color: var(--danger);
   color: #fff;
+  transition: background 0.2s;
+}
+.modal-botoes button:last-child {
+  background: #ccc;
+  color: #333;
+}
+.modal-botoes button:hover {
+  opacity: 0.9;
 }
 
-.btn-cancelar {
-  background: #6c757d;
-  color: #fff;
+/* 7. Mensagens de erro */
+.erro {
+  color: var(--danger);
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
 }
 
-.rotinas-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 16px;
-  margin-top: 24px;
-}
-
-.rotina-card {
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 16px;
+/* 8. AvatarManager (exemplo básico) */
+.header-perfil .avatar-manager {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  align-items: center;
+  gap: 0.5rem;
+}
+.header-perfil .avatar-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--primary);
 }
 
-.rotina-card h3 {
-  margin: 0;
-  font-size: 1.1rem;
-}
-
-.rotina-card time {
-  font-size: 0.9rem;
-  color: #555;
-}
-
-.rotina-card p {
-  margin: 0;
-  font-size: 0.9rem;
-}
-
-.rotina-card .btn-editar {
-  margin-top: auto;
-  align-self: flex-end;
-  background: #f0f0f0;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.rotina-card .btn-editar:hover {
-  background: #e0e0e0;
+/* 9. Responsividade */
+@media (max-width: 600px) {
+  .acoes {
+    flex-direction: column;
+  }
+  .modal-conteudo {
+    max-width: 90%;
+  }
 }

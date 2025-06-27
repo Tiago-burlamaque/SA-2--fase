@@ -2,38 +2,27 @@
 import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 
-// cria uma instância axios com a baseURL
-const api = axios.create({ baseURL: 'http://localhost:3001' });
+// instância axios com baseURL (ideal usar variável de ambiente)
+const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3001' });
 
 export function useClientes() {
   // —— estados de dados ——
   const [clientes, setClientes]               = useState([]);
   const [clienteSelecionado, setClienteSelecionado] = useState(null);
+
   // —— estados de formulário ——
-  const [inputNome, setInputNome]             = useState('');
-  const [inputCpf, setInputCpf]             = useState('');
-  const [inputEmail, setInputEmail]           = useState('');
-  const [inputSenha, setInputSenha]           = useState('');
-  const [inputEndereco, setInputEndereco]     = useState('');
-  const [inputTelefone, setInputTelefone]     = useState('');
-  // —— estados de controle ——
+  const [inputNome, setInputNome]         = useState('');
+  const [inputCpf, setInputCpf]           = useState('');
+  const [inputEmail, setInputEmail]       = useState('');
+  const [inputSenha, setInputSenha]       = useState('');
+  const [inputEndereco, setInputEndereco] = useState('');
+  const [inputTelefone, setInputTelefone] = useState('');
+
+  // —— flags de controle ——
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState(null);
 
-  // chama o endpoint de upload, recebe { avatarUrl }
-const uploadAvatar = async (clienteId, file) => {
-  const form = new FormData();
-  form.append("avatar", file);
-
-  const { data } = await api.post(
-    `/clientes/${clienteId}/avatar`,
-    form,
-    { headers: { "Content-Type": "multipart/form-data" } }
-  );
-  return data.avatarUrl; // a nova URL salva no servidor
-};
-
-  // limpa todos os campos do formulário
+  // —— limpa o form ——
   const limparForm = useCallback(() => {
     setInputNome('');
     setInputCpf('');
@@ -43,15 +32,15 @@ const uploadAvatar = async (clienteId, file) => {
     setInputTelefone('');
   }, []);
 
-  // preenche o formulário a partir de um objeto cliente
+  // —— preenche o form a partir de um cliente ——
   const exibirCliente = useCallback((c) => {
-    if (!c) return;
-    setInputNome(c.nome || '');
-    setInputCpf(c.cpf || '');
-    setInputEmail(c.email || '');
-    setInputSenha(c.senha || '');
-    setInputEndereco(c.endereco || '');
-    setInputTelefone(c.telefone || '');
+    setClienteSelecionado(c);
+    setInputNome(c.nome    || '');
+    setInputCpf(c.cpf       || '');
+    setInputEmail(c.email   || '');
+    setInputSenha('');                // não expor senha existente
+    setInputEndereco(c.endereco|| '');
+    setInputTelefone(c.telefone|| '');
   }, []);
 
   // —— BUSCAR TODOS OS CLIENTES ——  
@@ -63,7 +52,7 @@ const uploadAvatar = async (clienteId, file) => {
       setClientes(data);
     } catch (err) {
       console.error('Erro ao buscar clientes:', err);
-      setError('Não foi possível carregar a lista de clientes.');
+      setError('Não foi possível carregar os clientes.');
     } finally {
       setLoading(false);
     }
@@ -74,45 +63,50 @@ const uploadAvatar = async (clienteId, file) => {
     setLoading(true);
     setError(null);
     try {
-      const resp = await api.get(`/clientes/${id}`);
-      if (resp.status === 200 && resp.data) {
-        setClienteSelecionado(resp.data);
-        exibirCliente(resp.data);
-        return resp.data;
-      } else {
-        setError('Cliente não encontrado.');
-        return null;
-      }
+      const { data } = await api.get(`/clientes/${id}`);
+      exibirCliente(data);
+      return data;
     } catch (err) {
       console.error('Erro ao buscar cliente:', err);
-      setError('Erro na requisição do cliente.');
+      setError('Cliente não encontrado.');
       return null;
     } finally {
       setLoading(false);
     }
   }, [exibirCliente]);
 
+  // —— UPLOAD DO AVATAR ——  
+  const uploadAvatar = useCallback(async (clienteId, file) => {
+    const form = new FormData();
+    form.append('avatar', file);
+    const { data } = await api.post(
+      `/clientes/${clienteId}/avatar`,
+      form,
+      { headers: { 'Content-Type': 'multipart/form-data' } }
+    );
+    // retorna a URL do avatar salva no servidor
+    return data.avatarUrl || data.avatar_url;
+  }, []);
+
   // —— CADASTRAR CLIENTE ——  
   const cadastrarCliente = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await api.post("/clientes", {
-        nome:      inputNome,
-        cpf:       inputCpf,
-        endereco:  inputEndereco,
-        email:     inputEmail,
-        telefone:  inputTelefone,
-        senha:     inputSenha,
-      });
-      // Se quiser devolver o novo cliente para o chamador:
+      const payload = {
+        nome: inputNome, cpf: inputCpf,
+        endereco: inputEndereco,
+        email: inputEmail,
+        telefone: inputTelefone,
+        senha: inputSenha,
+      };
+      const { data } = await api.post('/clientes', payload);
       await fetchClientes();
       limparForm();
-      return data; 
+      return data;
     } catch (err) {
-      console.error("Erro ao cadastrar cliente:", err);
-      // guarda a mensagem no estado, mas também lança
-      setError(err.response?.data?.error || "Falha ao cadastrar cliente");
+      console.error('Erro ao cadastrar cliente:', err);
+      setError(err.response?.data?.error || 'Falha ao cadastrar cliente.');
       throw err;
     } finally {
       setLoading(false);
@@ -124,35 +118,53 @@ const uploadAvatar = async (clienteId, file) => {
   ]);
 
   // —— SALVAR (ATUALIZAR) CLIENTE ——  
-  const salvarCliente = useCallback(async () => {
-    if (!clienteSelecionado) {
-      setError('Nenhum cliente selecionado.');
-      return;
-    }
-    setLoading(true);
-    setError(null);
-    try {
-      await api.put(`/clientes/${clienteSelecionado.id_clientes}`, {
+// src/common/service/useClientes.js
+const salvarCliente = useCallback(async () => {
+  if (!clienteSelecionado) {
+    setError('Nenhum cliente selecionado.');
+    return null;
+  }
+  setLoading(true);
+  setError(null);
+
+  try {
+    // 1️⃣ faz o PUT
+    await api.put(
+      `/clientes/${clienteSelecionado.id_clientes}`,
+      {
         nome: inputNome,
         cpf: inputCpf,
         email: inputEmail,
-        senha: inputSenha,  
+        senha: inputSenha || undefined,
         endereco: inputEndereco,
         telefone: inputTelefone,
-      });
-      await fetchClientes();
-      setClienteSelecionado(null);
-      limparForm();
-    } catch (err) {
-      console.error('Erro ao salvar cliente:', err);
-      setError('Falha ao atualizar o cliente.');
-    } finally {
-      setLoading(false);
-    }
-  }, [
-    clienteSelecionado, inputNome, inputCpf, inputEmail, inputSenha,
-    inputEndereco, inputTelefone, fetchClientes, limparForm
-  ]);
+      }
+    );
+
+    // 2️⃣ re-busca o cliente completo do backend
+    const { data: atualizado } = await api.get(
+      `/clientes/${clienteSelecionado.id_clientes}`
+    );
+
+    // 3️⃣ atualiza o form e o cliente selecionado
+    exibirCliente(atualizado);
+
+    // 4️⃣ retorna o objeto inteiro
+    return atualizado;
+  } catch (err) {
+    console.error('Erro ao salvar cliente:', err);
+    setError(err.response?.data?.error || 'Falha ao atualizar o cliente.');
+    throw err;
+  } finally {
+    setLoading(false);
+  }
+}, [
+  clienteSelecionado,
+  inputNome, inputCpf, inputEmail, inputSenha,
+  inputEndereco, inputTelefone,
+  exibirCliente
+]);
+
 
   // —— DELETAR CLIENTE ——  
   const deletarCliente = useCallback(async (id) => {
@@ -190,7 +202,7 @@ const uploadAvatar = async (clienteId, file) => {
     }
   }, [inputEmail, inputSenha]);
 
-  // dispara o fetch de clientes quando o hook monta
+  // dispara o fetch ao montar
   useEffect(() => {
     fetchClientes();
   }, [fetchClientes]);
@@ -199,14 +211,17 @@ const uploadAvatar = async (clienteId, file) => {
     // dados
     clientes,
     clienteSelecionado,
-    // inputs
-    inputNome, inputCpf, inputEmail, inputSenha, inputEndereco, inputTelefone,
-    // setters
+
+    // inputs e setters
+    inputNome, inputCpf, inputEmail, inputSenha,
+    inputEndereco, inputTelefone,
     setInputNome, setInputCpf, setInputEmail, setInputSenha,
     setInputEndereco, setInputTelefone,
+
     // flags
     loading, error,
-    // ações
+
+    // actions
     fetchClientes,
     buscarClientePorId,
     cadastrarCliente,
@@ -214,5 +229,6 @@ const uploadAvatar = async (clienteId, file) => {
     deletarCliente,
     loginCliente,
     limparForm,
+    uploadAvatar      // exposto para uso em AvatarManager, se desejar
   };
 }

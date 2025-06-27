@@ -9,33 +9,33 @@ export const AuthContext = createContext({
 });
 
 export function AuthProvider({ children }) {
-  // inicializa a partir do que estiver no localStorage
+  // 1️⃣ Inicializa o user a partir do storage
   const [user, setUser] = useState(() => {
     const stored = localStorage.getItem("cliente");
     return stored ? JSON.parse(stored) : null;
   });
 
-  // login: seta estado E grava no storage
+  // 2️⃣ Faz login: guarda o objeto inteiro e persiste
   const login = useCallback((cliente) => {
     setUser(cliente);
     localStorage.setItem("cliente", JSON.stringify(cliente));
   }, []);
 
-  // logout: limpa estado E apaga do storage
+  // 3️⃣ Faz logout: limpa estado e storage
   const logout = useCallback(() => {
     setUser(null);
     localStorage.removeItem("cliente");
   }, []);
 
-  // updateUser: mescla novos campos e atualiza o storage
-  const updateUser = useCallback((patch) => {
-    setUser((prev) => {
-      if (!prev) return prev;
-      const next = { ...prev, ...patch };
-      localStorage.setItem("cliente", JSON.stringify(next));
-      return next;
-    });
-  }, []);
+  // 4️⃣ Atualiza (merge ou substitui) e sincroniza com storage
+const updateUser = useCallback(patchOrFull => {
+  setUser(prev => {
+    const updated = { ...(prev||{}), ...patchOrFull };
+    localStorage.setItem("cliente", JSON.stringify(updated));
+    return updated;
+  });
+}, []);
+
 
   return (
     <AuthContext.Provider value={{ user, login, logout, updateUser }}>

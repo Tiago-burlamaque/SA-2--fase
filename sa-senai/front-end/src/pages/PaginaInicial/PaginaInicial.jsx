@@ -1,69 +1,73 @@
 // src/pages/PaginaInicial/PaginaInicial.jsx
 import React, { useState, useEffect, useContext } from "react";
-import { useNavigate, Navigate } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 import { useClientes } from "../../common/service/useClientes";
-import { useRotinas }  from "../../common/service/useRotinas";
-import AvatarManager   from "../../common/components/avatar/AvatarManager";
+import { useRotinas } from "../../common/service/useRotinas";
+import { useUser } from "../../common/service/useUser";
+
+import AvatarManager from "../../common/components/avatar/AvatarManager";
 import "./PaginaInicial.css";
 
 export default function PaginaInicial() {
   const navigate = useNavigate();
   const { user, logout, updateUser } = useContext(AuthContext);
-
-  // Se não estiver logado, redireciona
-  if (!user) return <Navigate to="/login" replace />;
-
+  if (!user) return null;
   const clienteId = user.id_clientes;
 
-  // hooks de cliente (conta)
+ // callback que o AvatarManager vai chamar
+ const handleAvatarUpdate = async (patch) => {
+   // 1) atualiza imediatamente o avatar no contexto
+   updateUser(patch);
+
+   // 2) busca o cliente completo (contendo nome, e-mail, etc)
+   const full = await buscarClientePorId(clienteId);
+
+   // 3) mescla o objeto completo no contexto
+   updateUser(full);
+ };
+
+  // Hooks de cliente
   const {
-    inputNome, inputEmail, inputSenha,
-    inputEndereco, inputTelefone,
-    setInputNome, setInputEmail, setInputSenha,
-    setInputEndereco, setInputTelefone,
-    buscarClientePorId, salvarCliente,
-    deletarCliente, limparForm
+    inputNome, inputEmail, inputSenha, inputEndereco, inputTelefone,
+    setInputNome, setInputEmail, setInputSenha, setInputEndereco, setInputTelefone,
+    buscarClientePorId, salvarCliente, deletarCliente, limparForm
   } = useClientes();
 
-  // hooks de rotinas
+  // Hooks de rotinas
   const {
-    rotinas,
-    loading: loadingRotinas,
-    error: errorRotinas,
-    fetchRotinas,
-    criarRotina,
-    atualizarRotina,
-    deletarRotina
+    rotinas, loading: loadingRotinas, error: errorRotinas,
+    fetchRotinas, criarRotina, atualizarRotina, deletarRotina
   } = useRotinas();
 
-  // estados de modais
-  const [isContaModalOpen, setContaModalOpen] = useState(false);
-  const [isRotinaModalOpen, setRotinaModalOpen] = useState(false);
+  // Modais
+  const [modalContaOpen,  setModalContaOpen]  = useState(false);
+  const [modalRotinaOpen, setModalRotinaOpen] = useState(false);
 
-  // estado de formulário de rotina
-  const [editRotinaIndex, setEditRotinaIndex] = useState(null);
-  const [titulo, setTitulo]         = useState("");
-  const [dataHora, setDataHora]     = useState("");
+  // Form Rotina
+  const [editIndex, setEditIndex] = useState(null);
+  const [titulo,    setTitulo]    = useState("");
+  const [dataHora,  setDataHora]  = useState("");
   const [recorrencia, setRecorrencia] = useState("Nenhuma");
 
-  // busca rotinas ao montar
+  // Busca rotinas ao montar
   useEffect(() => {
+    if (!clienteId) return navigate("/login");
     fetchRotinas(clienteId);
-  }, [clienteId, fetchRotinas]);
+  }, [clienteId, fetchRotinas, navigate]);
 
-  // carrega dados do cliente ao abrir modal de conta
+  // Carrega dados do cliente no modal de conta
   useEffect(() => {
-    if (isContaModalOpen) {
+    if (modalContaOpen) {
       buscarClientePorId(clienteId).catch(() => {
         logout();
         navigate("/login");
       });
     }
-  }, [isContaModalOpen, clienteId, buscarClientePorId, logout, navigate]);
+  }, [modalContaOpen, clienteId, buscarClientePorId, logout, navigate]);
 
-  // abre modal de rotina (criar ou editar)
-  function openRotinaModal(idx = null) {
+  // Helpers Rotina
+  const openRotinaModal = (idx = null) => {
     if (idx !== null) {
       const r = rotinas[idx];
       setTitulo(r.titulo);
@@ -74,79 +78,72 @@ export default function PaginaInicial() {
       setDataHora("");
       setRecorrencia("Nenhuma");
     }
-    setEditRotinaIndex(idx);
-    setRotinaModalOpen(true);
-  }
-
-  // fecha modal de rotina
-  function closeRotinaModal() {
-    setRotinaModalOpen(false);
-    setEditRotinaIndex(null);
-  }
-
-  // cria ou atualiza rotina
-  async function handleSaveRotina() {
+    setEditIndex(idx);
+    setModalRotinaOpen(true);
+  };
+  const closeRotinaModal = () => {
+    setModalRotinaOpen(false);
+    setEditIndex(null);
+  };
+  const handleSaveRotina = async () => {
     const payload = { titulo, data_hora: dataHora, recorrencia };
-    if (editRotinaIndex !== null) {
-      await atualizarRotina(
-        clienteId,
-        rotinas[editRotinaIndex].id_rotina,
-        payload
-      );
+    if (editIndex !== null) {
+      await atualizarRotina(clienteId, rotinas[editIndex].id_rotina, payload);
     } else {
       await criarRotina(clienteId, payload);
     }
     closeRotinaModal();
-  }
-
-  // exclui rotina
-  async function handleDeleteRotina() {
-    if (editRotinaIndex !== null) {
-      await deletarRotina(
-        clienteId,
-        rotinas[editRotinaIndex].id_rotina
-      );
+  };
+  const handleDeleteRotina = async () => {
+    if (editIndex !== null) {
+      await deletarRotina(clienteId, rotinas[editIndex].id_rotina);
       closeRotinaModal();
+    }
+  };
+
+  // Salvar Conta
+  async function handleSaveConta() {
+    try {
+      // retorna o objeto atualizado (com nome, avatar_url, etc.)
+      const usuarioAtualizado = await salvarCliente();
+  
+      // dispara o merge no contexto + storage
+      updateUser(usuarioAtualizado);
+  
+      // fecha o modal
+      setModalContaOpen(false);
+    } catch (err) {
+      console.error("Erro ao salvar conta:", err);
     }
   }
 
-  // conta: salvar, excluir, cancelar
-  async function handleSaveConta() {
-    await salvarCliente();
-    setContaModalOpen(false);
-  }
-
-  async function handleDeleteConta() {
+  const handleDeleteConta = async () => {
     await deletarCliente(clienteId);
     limparForm();
     logout();
     navigate("/login");
-  }
-
-  function handleCancelConta() {
+  };
+  const handleCancelConta = () => {
     limparForm();
-    setContaModalOpen(false);
-  }
+    setModalContaOpen(false);
+  };
 
   return (
     <div className="pagina-inicial">
-      {/* CABEÇALHO */}
+      <h1>Bem-vindo ao seu painel</h1>
+
       <header className="header-perfil">
         <AvatarManager
-          userId={user.id_clientes}
+          userId={clienteId}
           initialUrl={user.avatar_url}
           userName={user.nome}
-          onUpdate={(patch) => updateUser(patch)}
+         onUpdate={handleAvatarUpdate}
         />
-        <div className="perfil-info">
-          <span>Olá, {user.nome.split(" ")[0]}!</span>
-          <button onClick={logout}>Sair</button>
-        </div>
+       <span>Olá, {user.nome.split(" ")[0]}</span>
       </header>
 
-      {/* AÇÕES */}
       <div className="acoes">
-        <button onClick={() => setContaModalOpen(true)}>
+        <button onClick={() => setModalContaOpen(true)}>
           Editar / Excluir Conta
         </button>
         <button onClick={() => openRotinaModal()}>
@@ -154,7 +151,6 @@ export default function PaginaInicial() {
         </button>
       </div>
 
-      {/* GRID DE ROTINAS */}
       <div className="rotinas-grid">
         {loadingRotinas && <p>Carregando rotinas...</p>}
         {errorRotinas && <p className="erro">{errorRotinas}</p>}
@@ -171,8 +167,8 @@ export default function PaginaInicial() {
         ))}
       </div>
 
-      {/* MODAL DE CONTA */}
-      {isContaModalOpen && (
+      {/* Modal Conta */}
+      {modalContaOpen && (
         <div className="modal-overlay">
           <div className="modal-conteudo">
             <h2>Editar Conta</h2>
@@ -212,13 +208,11 @@ export default function PaginaInicial() {
         </div>
       )}
 
-      {/* MODAL DE ROTINA */}
-      {isRotinaModalOpen && (
+      {/* Modal Rotina */}
+      {modalRotinaOpen && (
         <div className="modal-overlay">
           <div className="modal-conteudo">
-            <h2>
-              {editRotinaIndex !== null ? "Editar Rotina" : "Nova Rotina"}
-            </h2>
+            <h2>{editIndex !== null ? "Editar Rotina" : "Nova Rotina"}</h2>
             <label>Título</label>
             <input
               type="text"
@@ -243,13 +237,10 @@ export default function PaginaInicial() {
             </select>
             <div className="modal-botoes">
               <button onClick={handleSaveRotina}>
-                {editRotinaIndex !== null ? "Atualizar" : "Criar"}
+                {editIndex !== null ? "Atualizar" : "Criar"}
               </button>
-              {editRotinaIndex !== null && (
-                <button
-                  onClick={handleDeleteRotina}
-                  className="btn-excluir"
-                >
+              {editIndex !== null && (
+                <button onClick={handleDeleteRotina} className="btn-excluir">
                   Excluir Rotina
                 </button>
               )}

@@ -1,8 +1,17 @@
 /* src/components/AvatarManager/AvatarManager.css */
 .avatar-manager {
-  position: relative;
-  display: inline-block;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
+
+.avatar-display {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .avatar-img,
 .avatar-fallback {
   width: 80px;
@@ -15,6 +24,31 @@
   justify-content: center;
   font-size: 32px;
   color: #555;
+}
+
+.btn-edit-avatar {
+  margin-top: 8px;
+  padding: 4px 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.am-upload {
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.btn-upload {
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.error {
+  color: red;
+  font-size: 0.85rem;
+  margin-top: 4px;
 }
 .avatar-actions {
   margin-top: 8px;

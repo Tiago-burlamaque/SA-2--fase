@@ -46,7 +46,7 @@ return (
       <h1>Login</h1>
       <form onSubmit={entrar}>
         <div className="cnt-box-login">
-          <label htmlFor="email">E-mail:</label>
+          <label htmlFor="email">E-mail</label>
           <input
             id="email"
             type="email"
@@ -57,7 +57,7 @@ return (
         </div>
 
         <div className="cnt-box-login">
-          <label htmlFor="senha">Senha:</label>
+          <label htmlFor="senha">Senha</label>
           <input
             id="senha"
             type="password"

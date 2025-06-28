@@ -6,6 +6,8 @@
   min-height: 100%;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: 2rem;
   padding: 2rem;
   background: var(--cor-fundo-padrao);
@@ -17,6 +19,7 @@
   margin: 0;
   font-size: 2rem;
   font-weight: 600;
+  color: var(--cor-texto-padrao);
 }
 
 /* 2) Header de perfil (avatar) */
@@ -113,7 +116,7 @@
   justify-content: center;
   align-items: center;
   padding: 1rem;
-  z-index: 1000;
+  z-index: 1;
 }
 
 .modal-conteudo {

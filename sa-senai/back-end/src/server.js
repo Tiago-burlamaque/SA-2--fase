@@ -21,7 +21,7 @@ if (!fs.existsSync(UPLOAD_DIR)) {
 const pool = mysql.createPool({
   host: "localhost",
   user: "root",
-  password: "senai",
+  password: "futlast",
   database: "crud_cliente_demo",
   waitForConnections: true,
   connectionLimit: 10,

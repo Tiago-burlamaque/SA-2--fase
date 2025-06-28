@@ -11,6 +11,12 @@
   flex-direction: column;
   align-items: center;
 }
+.avatar-display button{
+  border: none;
+  background-color: #66bb6a;
+  padding: 15px;
+  border-radius: 10px;
+}
 
 .avatar-img,
 .avatar-fallback {

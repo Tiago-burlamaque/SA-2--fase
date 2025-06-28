@@ -27,9 +27,9 @@ export default function Navbar() {
           <>
             <li><Link to="/home">Home</Link></li>
             <li>
-              <button onClick={handleLogout} className="navbar-logout">
+              <Link onClick={handleLogout} className="navbar-logout">
                 Logout
-              </button>
+              </Link>
             </li>
           </>
         )}

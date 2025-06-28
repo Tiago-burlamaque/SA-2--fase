@@ -32,7 +32,7 @@ input{
     border-radius: 10px;
     margin: 10px;
 }
-.btn-cad{
+.btn-clean{
     width: 10vw;
     padding: 14px;
     font-size: 20px;
@@ -42,12 +42,12 @@ input{
     border: 1px solid var(--cor-aviso);
     background-color: var(--cor-aviso);
 }
-.btn-cad:hover{
+.btn-clean:hover{
     box-shadow:0 0 20px var(--cor-aviso);
     transition-duration: 1s;
     cursor: pointer;
 }
-.btn-clean{
+.btn-cad{
     width: 30vw;
     padding: 14px;
     font-size: 20px;
@@ -57,7 +57,7 @@ input{
     border: 1px solid var(--cor-sucesso);
     background-color: var(--cor-sucesso);
 }
-.btn-clean:hover{
+.btn-cad:hover{
     box-shadow:0 0 20px var(--cor-sucesso);
     transition-duration: 1s;
     cursor: pointer;

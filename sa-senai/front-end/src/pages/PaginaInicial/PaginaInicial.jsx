@@ -129,8 +129,7 @@ export default function PaginaInicial() {
 
   return (
     <div className="pagina-inicial">
-      <h1>Bem-vindo ao seu painel</h1>
-
+      <h1>Olá {user.nome.split(" ")[0]}, seja bem-vindo ao seu painel.</h1>
       <header className="header-perfil">
         <AvatarManager
           userId={clienteId}
@@ -138,7 +137,6 @@ export default function PaginaInicial() {
           userName={user.nome}
          onUpdate={handleAvatarUpdate}
         />
-       <span>Olá, {user.nome.split(" ")[0]}</span>
       </header>
 
       <div className="acoes">
